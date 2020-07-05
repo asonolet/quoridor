@@ -3,11 +3,14 @@ from typing import Tuple
 import numpy as np
 import time
 
-from numpy.core.multiarray import ndarray
+from numpy import ndarray
 from scipy import sparse as sp
 
 
 class Game:
+    """
+    This object contains anything a game needs to be played
+    """
     def __init__(self, game_name):
 
         self.game_name = game_name
@@ -189,12 +192,13 @@ class Game:
 
 
 class Player:
+    """
+    each player gets a name, a number of wall, a position (i,j) and a
+    position k
+    :param player_number:
+    """
+
     def __init__(self, player_number: int):
-        """
-        each player gets a name, a number of wall, a position (i,j) and a
-        position k
-        :param player_number:
-        """
         self.name = player_number
         self.n_tuiles = 10
         if player_number == 0:
@@ -208,6 +212,10 @@ class Player:
 
 
 class BoardState:
+    """
+    This object os used to play at one instant. A game is a succession of BoardState.
+    Methods to pass from one BoardState to an other are declared here.
+    """
     def __init__(self):
 
         self.wall_possibilities = np.ones((8, 8, 2))
@@ -448,3 +456,4 @@ if __name__ == '__main__':
     temps = fin - debut
     print('Temps moyen par coup : ', temps / i)
     print('Nombre de coup total :', i)
+
