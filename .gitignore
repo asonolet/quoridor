@@ -1,0 +1,6 @@
+venv*
+*.swp
+*.vim
+.idea*
+play*
+*_old*
