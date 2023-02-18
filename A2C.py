@@ -361,7 +361,7 @@ class A2CAgent:
 
 
 if __name__ == '__main__':
-    from Quoridor2 import Game, play_with_proba
+    from Quoridor import Game, play_with_proba
 
     env = Env(Game, play_with_proba)
     model = Model(num_actions=env.action_space.n)

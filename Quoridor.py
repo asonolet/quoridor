@@ -11,6 +11,7 @@ class Game:
     """
     This object contains anything a game needs to be played
     """
+
     def __init__(self, game_name):
 
         self.game_name = game_name
@@ -23,7 +24,7 @@ class Game:
         self.all_walls_choices = np.transpose(np.nonzero(
             self.board_state.wall_possibilities > 0))
         self.set = 100 * self.all_walls_choices[:, 0] \
-            + 10 * self.all_walls_choices[:, 1] + self.all_walls_choices[:, 2]
+                   + 10 * self.all_walls_choices[:, 1] + self.all_walls_choices[:, 2]
 
     def coup(self, choice=None, player_number=1, get_back=False, score_=True):
         """
@@ -73,12 +74,12 @@ class Game:
     def _all_moves(self, player_number: int):
         all_moves = []
         for _, k in self.board_state.free_paths[self.board_state.player[
-                player_number].k_pos, :].keys():
+            player_number].k_pos, :].keys():
             new_coup = (k // 10, k % 10, -1)
             new_position = new_coup[:2]
             # In this case, both players are next one another
             if new_position == self.board_state.player[
-                    1 - player_number].position:
+                1 - player_number].position:
                 old_pos = np.array(self.board_state.player[
                                        player_number].position)
                 new_position = np.array(new_position)
@@ -86,7 +87,7 @@ class Game:
                 if (0 < new_coup[0] < 9) & (0 < new_coup[1] < 9):
                     if self.board_state.free_paths[
                         10 * new_coup[0] + new_coup[1], new_position[0] * 10 +
-                            new_position[1]]:
+                                                        new_position[1]]:
                         all_moves.append(new_coup)
             else:
                 all_moves.append(new_coup)
@@ -132,8 +133,8 @@ class Game:
             all_walls_available = np.transpose(np.nonzero(
                 self.board_state.wall_possibilities > 0))
             test_set = 100 * all_walls_available[:, 0] + \
-                10 * all_walls_available[:, 1] + \
-                all_walls_available[:, 2]
+                       10 * all_walls_available[:, 1] + \
+                       all_walls_available[:, 2]
             isin = np.isin(self.set, test_set, assume_unique=True)
             indices = np.nonzero(isin)
             scores = -1000 * np.ones(len(isin))
@@ -161,7 +162,7 @@ class Game:
         scores[scores != -1000] -= np.mean(scores[scores != -1000])
         return scores
 
-    def evaluate_all_possibilities(self, player_number: int):
+    def evaluate_all_possibilities(self, player_number):
         """
         for a given board state, test all possibilities,
         score them for player i
@@ -216,6 +217,7 @@ class BoardState:
     This object os used to play at one instant. A game is a succession of BoardState.
     Methods to pass from one BoardState to an other are declared here.
     """
+
     def __init__(self):
 
         self.wall_possibilities = np.ones((8, 8, 2))
@@ -370,9 +372,10 @@ class BoardState:
 
     def to_universal_state(self, i_):
         return np.r_[np.ravel(self.wall_possibilities), np.array(self.player[
-            i_ % 2].position)/8, np.array(self.player[(i_ + 1) % 2].position)/8,
-                     self.player[i_ % 2].n_tuiles/10, self.player[(i_ + 1) %
-                                                               2].n_tuiles/10]
+                                                                     i_ % 2].position) / 8, np.array(
+            self.player[(i_ + 1) % 2].position) / 8,
+                     self.player[i_ % 2].n_tuiles / 10, self.player[(i_ + 1) %
+                                                                    2].n_tuiles / 10]
 
 
 def play_greedy(game_, player_number):
@@ -456,4 +459,3 @@ if __name__ == '__main__':
     temps = fin - debut
     print('Temps moyen par coup : ', temps / i)
     print('Nombre de coup total :', i)
-
