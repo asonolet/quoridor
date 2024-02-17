@@ -2,5 +2,6 @@ venv*
 *.swp
 *.vim
 .idea*
-play*
 *_old*
+*__pycache__*
+*.egg-info*
