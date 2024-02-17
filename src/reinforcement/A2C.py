@@ -4,7 +4,7 @@ import tensorflow.keras.layers as kl
 import tensorflow.keras.losses as kls
 import tensorflow.keras.optimizers as ko
 import logging
-from graphic_quoridor import Plotter
+from quoridor.graphic_quoridor import Plotter
 
 
 class ActionSpace:

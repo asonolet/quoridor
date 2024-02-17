@@ -5,7 +5,7 @@ import tensorflow as tf
 
 from tensorflow.keras.layers import Dense, Flatten, Conv2D
 from tensorflow.keras import Model
-from Quoridor2 import *
+from quoridor.Quoridor import *
 import os
 
 states = np.load('play_with_proba_without_score/' + os.listdir(

@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quoridor"
+version = "0.1.0"
+dependencies = [
+    "numpy",
+    "scipy"
+]
+
+[project.optional-dependencies]
+ml = ["tensorflow"]
+x = ["matplotlib"]
