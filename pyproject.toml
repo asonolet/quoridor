@@ -13,3 +13,4 @@ dependencies = [
 [project.optional-dependencies]
 ml = ["tensorflow"]
 x = ["matplotlib"]
+all = ["tensorflow", "matplotlib"]
