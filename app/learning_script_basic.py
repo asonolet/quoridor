@@ -90,7 +90,7 @@ def play_to_explore_without_score_mp(player1, player2, n, i_start):
     states = []
     i = i_start
     while i <= n + i_start:
-        game = Game('')
+        game = Game("")
         while (game.board_state.winner is None) and (i <= n + i_start):
             if i % 2 == 0:
                 player = player1
@@ -100,13 +100,16 @@ def play_to_explore_without_score_mp(player1, player2, n, i_start):
             game.coup(player(game, i % 2), i % 2, score_=False)
             states.append(state0)
             if i % CHKPT == 0:
-                print(mp.current_process().name + ' avencement : %.2d %% '
-                                                  'writting file %.3d' % (((
-                                                                      i-i_start) / n * 100), i//CHKPT))
-                np.save('play_with_proba_without_score/states_%.3d.npy' % (
-                        i//CHKPT), states)
+                print(
+                    mp.current_process().name + " avencement : %.2d %% "
+                    "writting file %.3d" % (((i - i_start) / n * 100), i // CHKPT)
+                )
+                np.save(
+                    "play_with_proba_without_score/states_%.3d.npy" % (i // CHKPT),
+                    states,
+                )
                 states = []
-            i = i+1
+            i = i + 1
 
     # return states[:10], rewards[:10]
 
@@ -119,16 +122,15 @@ if __name__ == "__main__":
     N_COUPS = 1000
     jobs = []
     for ip in range(procs):
-        p = mp.Process(target=play_to_explore_without_score_mp,
-                       args=(play_with_proba, play_with_proba,
-                             N_COUPS, ip * N_COUPS))
+        p = mp.Process(
+            target=play_to_explore_without_score_mp,
+            args=(play_with_proba, play_with_proba, N_COUPS, ip * N_COUPS),
+        )
         jobs.append(p)
         p.start()
 
     for p in jobs:
         p.join()
     stop = time.time()
-    print('time of exectution : %.2f' % (stop - start))
-    print('time of execution per game : %.2f' % ((stop - start) / (
-        procs * N_COUPS)))
-
+    print("time of exectution : %.2f" % (stop - start))
+    print("time of execution per game : %.2f" % ((stop - start) / (procs * N_COUPS)))

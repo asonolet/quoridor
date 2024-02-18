@@ -13,7 +13,6 @@ class Game:
     """
 
     def __init__(self, game_name):
-
         self.game_name = game_name
         self.board_state = BoardState()
 
@@ -21,10 +20,14 @@ class Game:
         self.coup_joues.append((4, 0, -1))
         self.coup_joues.append((4, 8, -1))
 
-        self.all_walls_choices = np.transpose(np.nonzero(
-            self.board_state.wall_possibilities > 0))
-        self.set = 100 * self.all_walls_choices[:, 0] \
-                   + 10 * self.all_walls_choices[:, 1] + self.all_walls_choices[:, 2]
+        self.all_walls_choices = np.transpose(
+            np.nonzero(self.board_state.wall_possibilities > 0)
+        )
+        self.set = (
+            100 * self.all_walls_choices[:, 0]
+            + 10 * self.all_walls_choices[:, 1]
+            + self.all_walls_choices[:, 2]
+        )
 
     def coup(self, choice=None, player_number=1, get_back=False, score_=True):
         """
@@ -43,8 +46,7 @@ class Game:
         else:
             self.board_state.add_new_wall(choice, player_number)
         if score_:
-            dist = self.board_state.score_with_relative_path_length_dif(
-                player_number)
+            dist = self.board_state.score_with_relative_path_length_dif(player_number)
             if get_back:
                 self.get_back(1)
             return dist
@@ -73,21 +75,21 @@ class Game:
 
     def _all_moves(self, player_number: int):
         all_moves = []
-        for _, k in self.board_state.free_paths[self.board_state.player[
-            player_number].k_pos, :].keys():
+        for _, k in self.board_state.free_paths[
+            self.board_state.player[player_number].k_pos, :
+        ].keys():
             new_coup = (k // 10, k % 10, -1)
             new_position = new_coup[:2]
             # In this case, both players are next one another
-            if new_position == self.board_state.player[
-                1 - player_number].position:
-                old_pos = np.array(self.board_state.player[
-                                       player_number].position)
+            if new_position == self.board_state.player[1 - player_number].position:
+                old_pos = np.array(self.board_state.player[player_number].position)
                 new_position = np.array(new_position)
                 new_coup = tuple(np.r_[2 * new_position - old_pos, -1])
                 if (0 < new_coup[0] < 9) & (0 < new_coup[1] < 9):
                     if self.board_state.free_paths[
-                        10 * new_coup[0] + new_coup[1], new_position[0] * 10 +
-                                                        new_position[1]]:
+                        10 * new_coup[0] + new_coup[1],
+                        new_position[0] * 10 + new_position[1],
+                    ]:
                         all_moves.append(new_coup)
             else:
                 all_moves.append(new_coup)
@@ -96,8 +98,9 @@ class Game:
     def all_coups(self, player_number: int):
         all_moves = self._all_moves(player_number)
         if self.board_state.player[player_number].n_tuiles > 0:
-            all_walls = np.transpose(np.nonzero(
-                self.board_state.wall_possibilities > 0))
+            all_walls = np.transpose(
+                np.nonzero(self.board_state.wall_possibilities > 0)
+            )
             all_coups = np.concatenate((all_moves, all_walls))
         else:
             all_coups = np.array(all_moves)
@@ -130,23 +133,27 @@ class Game:
         # correspondent aux coups, et les coups associés comme ça je peux
         # remplir un tableau de zéros aux bons indices
         if self.board_state.player[player_number].n_tuiles > 0:
-            all_walls_available = np.transpose(np.nonzero(
-                self.board_state.wall_possibilities > 0))
-            test_set = 100 * all_walls_available[:, 0] + \
-                       10 * all_walls_available[:, 1] + \
-                       all_walls_available[:, 2]
+            all_walls_available = np.transpose(
+                np.nonzero(self.board_state.wall_possibilities > 0)
+            )
+            test_set = (
+                100 * all_walls_available[:, 0]
+                + 10 * all_walls_available[:, 1]
+                + all_walls_available[:, 2]
+            )
             isin = np.isin(self.set, test_set, assume_unique=True)
             indices = np.nonzero(isin)
             scores = -1000 * np.ones(len(isin))
-            scores[indices] = \
-                np.apply_along_axis(lambda x: self.coup(x, player_number,
-                                                        get_back=True), 1,
-                                    all_walls_available)
+            scores[indices] = np.apply_along_axis(
+                lambda x: self.coup(x, player_number, get_back=True),
+                1,
+                all_walls_available,
+            )
         else:
             scores = -1000 * np.ones(len(self.set))
 
         # reste a faire les 4 mouvements possibles, +/-/gauche/droite
-        moves_scores = [-1000.] * 4
+        moves_scores = [-1000.0] * 4
         all_moves = self._all_moves(player_number)
         pos = self.board_state.player[player_number].position
         for move in all_moves:
@@ -174,9 +181,9 @@ class Game:
         # all_coups = np.transpose(np.nonzero(mask))
         all_coups = self.all_coups(player_number)
         # attention de temps en temps all_coups est de dimension 1 et ça plante
-        all_scores = np.apply_along_axis(lambda x: self.coup(x, player_number,
-                                                             get_back=True), 1,
-                                         all_coups)
+        all_scores = np.apply_along_axis(
+            lambda x: self.coup(x, player_number, get_back=True), 1, all_coups
+        )
 
         tri = all_scores.argsort()
         all_scores = all_scores[tri]
@@ -219,7 +226,6 @@ class BoardState:
     """
 
     def __init__(self):
-
         self.wall_possibilities = np.ones((8, 8, 2))
         self.player = [Player(0), Player(1)]
 
@@ -311,30 +317,28 @@ class BoardState:
         self.player[player_number].n_tuiles += 1
         x, y = new_position[0], new_position[1]
         k = 10 * x + y
-        self.wall_possibilities[x, y, 0] = min(1, self.wall_possibilities[x,
-                                                                          y,
-                                                                          0]
-                                               + 1)
-        self.wall_possibilities[x, y, 1] = min(1, self.wall_possibilities[x,
-                                                                          y,
-                                                                          1]
-                                               + 1)
+        self.wall_possibilities[x, y, 0] = min(1, self.wall_possibilities[x, y, 0] + 1)
+        self.wall_possibilities[x, y, 1] = min(1, self.wall_possibilities[x, y, 1] + 1)
 
         if new_position[2] == 0:
             if x < 7:
-                self.wall_possibilities[x + 1, y, 0] = \
-                    min(1, self.wall_possibilities[x + 1, y, 0] + 1)
+                self.wall_possibilities[x + 1, y, 0] = min(
+                    1, self.wall_possibilities[x + 1, y, 0] + 1
+                )
             if x > 0:
-                self.wall_possibilities[x - 1, y, 0] = \
-                    min(1, self.wall_possibilities[x - 1, y, 0] + 1)
+                self.wall_possibilities[x - 1, y, 0] = min(
+                    1, self.wall_possibilities[x - 1, y, 0] + 1
+                )
 
         if new_position[2] == 1:
             if y < 7:
-                self.wall_possibilities[x, y + 1, 1] = \
-                    min(1, self.wall_possibilities[x, y + 1, 1] + 1)
+                self.wall_possibilities[x, y + 1, 1] = min(
+                    1, self.wall_possibilities[x, y + 1, 1] + 1
+                )
             if y > 0:
-                self.wall_possibilities[x, y - 1, 1] = \
-                    min(1, self.wall_possibilities[x, y - 1, 1] + 1)
+                self.wall_possibilities[x, y - 1, 1] = min(
+                    1, self.wall_possibilities[x, y - 1, 1] + 1
+                )
 
         # adding the path that was blocked
         if new_position[2] == 0:
@@ -355,15 +359,25 @@ class BoardState:
         :return: if one way is blocked -1000, if player won inf, otherwise (
         l2-l1)/l1
         """
-        dist_graph = sp.csgraph.shortest_path(self.free_paths.tocsr(),
-                                              unweighted=True,
-                                              directed=False)  # type: ndarray
-        l1 = np.min([dist_graph[self.player[player_number].k_pos,
-                                8 * (1 - player_number) + 10 * i_] for i_ in
-                     range(9)])
-        l2 = np.min([dist_graph[self.player[1 - player_number].k_pos,
-                                8 * player_number + 10 * i_] for i_ in range(
-            9)])
+        dist_graph = sp.csgraph.shortest_path(
+            self.free_paths.tocsr(), unweighted=True, directed=False
+        )  # type: ndarray
+        l1 = np.min(
+            [
+                dist_graph[
+                    self.player[player_number].k_pos, 8 * (1 - player_number) + 10 * i_
+                ]
+                for i_ in range(9)
+            ]
+        )
+        l2 = np.min(
+            [
+                dist_graph[
+                    self.player[1 - player_number].k_pos, 8 * player_number + 10 * i_
+                ]
+                for i_ in range(9)
+            ]
+        )
         if (l1 == np.inf) or (l2 == np.inf):
             return -1000
         # if l1 == 0:
@@ -371,11 +385,13 @@ class BoardState:
         return (l2 - l1) / (l1 + 1)
 
     def to_universal_state(self, i_):
-        return np.r_[np.ravel(self.wall_possibilities), np.array(self.player[
-                                                                     i_ % 2].position) / 8, np.array(
-            self.player[(i_ + 1) % 2].position) / 8,
-                     self.player[i_ % 2].n_tuiles / 10, self.player[(i_ + 1) %
-                                                                    2].n_tuiles / 10]
+        return np.r_[
+            np.ravel(self.wall_possibilities),
+            np.array(self.player[i_ % 2].position) / 8,
+            np.array(self.player[(i_ + 1) % 2].position) / 8,
+            self.player[i_ % 2].n_tuiles / 10,
+            self.player[(i_ + 1) % 2].n_tuiles / 10,
+        ]
 
 
 def play_greedy(game_, player_number):
@@ -396,8 +412,9 @@ def play_with_proba(game_, player_number):
     return res[np.random.choice(len(cost), p=cost_)]
 
 
-def play_seeing_future_rec(game_, player_number, n_sim=3, n_future=3,
-                           counter=0, returned_scores=None):
+def play_seeing_future_rec(
+    game_, player_number, n_sim=3, n_future=3, counter=0, returned_scores=None
+):
     if game_.board_state.winner != -1:
         if player_number == game_.board_state.winner:
             return 1000
@@ -408,18 +425,16 @@ def play_seeing_future_rec(game_, player_number, n_sim=3, n_future=3,
             choices, scores = game_.evaluate_all_possibilities(player_number)
             return [scores[-1]]
         else:
-            choices, _ = game_.evaluate_all_possibilities((player_number +
-                                                           counter) % 2)
+            choices, _ = game_.evaluate_all_possibilities((player_number + counter) % 2)
             n_sim_possible = min(n_sim, len(choices))
             choices = choices[-n_sim_possible:]
             if returned_scores is None:
                 returned_scores = []
             for i_sim in range(n_sim_possible):
-                game_.coup(choices[i_sim], (player_number + counter) % 2,
-                           score_=False)
-                scores = play_seeing_future_rec(game_, player_number,
-                                                n_sim, n_future,
-                                                counter + 1)
+                game_.coup(choices[i_sim], (player_number + counter) % 2, score_=False)
+                scores = play_seeing_future_rec(
+                    game_, player_number, n_sim, n_future, counter + 1
+                )
                 game_.get_back(1)
                 if counter % 2 == 0:
                     # returned_scores.append(np.mean(scores))
@@ -427,16 +442,15 @@ def play_seeing_future_rec(game_, player_number, n_sim=3, n_future=3,
                 else:
                     returned_scores.append(np.max(scores))
             if counter == 0:
-                return choices[np.argmax(returned_scores)], np.max(
-                    returned_scores)
+                return choices[np.argmax(returned_scores)], np.max(returned_scores)
             else:
                 return returned_scores
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from graphic_quoridor import Plotter
 
-    game = Game('partie 1')
+    game = Game("partie 1")
     pt = Plotter()
     debut = time.time()
     i = 0
@@ -452,10 +466,10 @@ if __name__ == '__main__':
             # coup = play_greedy(game, i % 2)
         pt.play(game, i % 2, coup)
         score = game.coup(coup, i % 2, False, True)
-        print('Player %1d ' % (i % 2), coup, score)
+        print("Player %1d " % (i % 2), coup, score)
         i = i + 1
     print("And the winner is ... Player %.1d" % game.board_state.winner)
     fin = time.time()
     temps = fin - debut
-    print('Temps moyen par coup : ', temps / i)
-    print('Nombre de coup total :', i)
+    print("Temps moyen par coup : ", temps / i)
+    print("Nombre de coup total :", i)
