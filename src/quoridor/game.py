@@ -71,7 +71,8 @@ class Game:
     def _all_moves(self):
         all_moves = []
         for _, k in self.board_state.free_paths[
-            self.board_state.player.k_pos, :,
+            self.board_state.player.k_pos,
+            :,
         ]:
             new_coup = (k // 10, k % 10, -1)
             new_position = new_coup[:2]
@@ -175,7 +176,9 @@ class Game:
         all_coups = self.all_coups()
         # attention de temps en temps all_coups est de dimension 1 et ça plante
         all_scores = np.apply_along_axis(
-            lambda x: self.coup(x, get_back=True), 1, all_coups,
+            lambda x: self.coup(x, get_back=True),
+            1,
+            all_coups,
         )
 
         tri = all_scores.argsort()

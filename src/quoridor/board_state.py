@@ -48,7 +48,7 @@ class BoardState:
     Methods to pass from one BoardState to an other are declared here.
     """
 
-    def __init__(self, first_player: int =0) -> None:
+    def __init__(self, first_player: int = 0) -> None:
         """Initializes the board state as the begining of a game.
 
         :param first_player: the first player to play. Player 0 start
@@ -148,21 +148,25 @@ class BoardState:
         if new_position[2] == 0:
             if x < 7:
                 self.wall_possibilities[x + 1, y, 0] = min(
-                    1, self.wall_possibilities[x + 1, y, 0] + 1,
+                    1,
+                    self.wall_possibilities[x + 1, y, 0] + 1,
                 )
             if x > 0:
                 self.wall_possibilities[x - 1, y, 0] = min(
-                    1, self.wall_possibilities[x - 1, y, 0] + 1,
+                    1,
+                    self.wall_possibilities[x - 1, y, 0] + 1,
                 )
 
         if new_position[2] == 1:
             if y < 7:
                 self.wall_possibilities[x, y + 1, 1] = min(
-                    1, self.wall_possibilities[x, y + 1, 1] + 1,
+                    1,
+                    self.wall_possibilities[x, y + 1, 1] + 1,
                 )
             if y > 0:
                 self.wall_possibilities[x, y - 1, 1] = min(
-                    1, self.wall_possibilities[x, y - 1, 1] + 1,
+                    1,
+                    self.wall_possibilities[x, y - 1, 1] + 1,
                 )
 
         # adding the path that was blocked

@@ -14,8 +14,8 @@ p = p - 6
 
 
 class Coder(Model):
-    def __init__(self):
-        super(Coder, self).__init__()
+    def __init__(self) -> None:
+        super().__init__()
         self.d0 = Dense(50)
         self.d1 = Dense(30, activation="relu")
         self.d2 = Dense(10, activation="relu")
@@ -27,8 +27,8 @@ class Coder(Model):
 
 
 class Decoder(Model):
-    def __init__(self):
-        super(Decoder, self).__init__()
+    def __init__(self) -> None:
+        super().__init__()
         self.d1 = Dense(10, activation="relu")
         self.d11 = Dense(30, activation="relu")
         self.d2 = Dense(p)
@@ -40,8 +40,8 @@ class Decoder(Model):
 
 
 class AutoEncode(Model):
-    def __init__(self):
-        super(AutoEncode, self).__init__()
+    def __init__(self) -> None:
+        super().__init__()
         self.c = Coder()
         self.d = Decoder()
 
@@ -78,7 +78,7 @@ def accuracy(x, y):
 
 
 @tf.function
-def train_step(s):
+def train_step(s) -> None:
     with tf.GradientTape() as tape:
         # training=True is only needed if there are layers with different
         # behavior during training versus inference (e.g. Dropout).

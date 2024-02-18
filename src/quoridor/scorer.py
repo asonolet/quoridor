@@ -11,7 +11,9 @@ def score_with_relative_path_length_dif(bs: BoardState) -> float:
     l2-l1)/l1.
     """
     dist_graph = sp.csgraph.shortest_path(
-        bs.free_paths.tocsr(), unweighted=True, directed=False,
+        bs.free_paths.tocsr(),
+        unweighted=True,
+        directed=False,
     )  # type: ndarray
     l1 = np.min(
         [dist_graph[bs.player.k_pos, 8 * bs.last_player + 10 * i_] for i_ in range(9)],

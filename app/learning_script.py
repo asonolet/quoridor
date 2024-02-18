@@ -46,7 +46,7 @@ training = False
 
 
 class DDDQNNet:
-    def __init__(self, state_size, action_size, learning_rate, name):
+    def __init__(self, state_size, action_size, learning_rate, name) -> None:
         self.state_size = state_size
         self.action_size = action_size
         self.learning_rate = learning_rate
@@ -192,7 +192,7 @@ EnvNetwork = DDDQNNet(state_size, action_size, learning_rate, name="EnvNetwork")
 
 class SumTree:
     """This SumTree code is modified version of Morvan Zhou:
-    https://github.com/MorvanZhou/Reinforcement-learning-with-tensorflow/blob/master/contents/5.2_Prioritized_Replay_DQN/RL_brain.py
+    https://github.com/MorvanZhou/Reinforcement-learning-with-tensorflow/blob/master/contents/5.2_Prioritized_Replay_DQN/RL_brain.py.
     """
 
     data_pointer = 0
@@ -202,7 +202,7 @@ class SumTree:
     all values = 0
     """
 
-    def __init__(self, capacity):
+    def __init__(self, capacity) -> None:
         self.capacity = capacity  # Number of leaf nodes (final nodes) that
         # contains experiences
 
@@ -220,7 +220,7 @@ class SumTree:
            / \
           0   0
          / \ / \
-        0  0 0  0  [Size: capacity] it's at this line that there is the 
+        0  0 0  0  [Size: capacity] it's at this line that there is the
         priorities score (aka pi)
         """
 
@@ -232,7 +232,7 @@ class SumTree:
     data
     """
 
-    def add(self, priority, data):
+    def add(self, priority, data) -> None:
         # Look at what index we want to put the experience
         tree_index = self.data_pointer + self.capacity - 1
 
@@ -262,7 +262,7 @@ tree_index  0 0  0  We fill the leaves from left to right
     Update the leaf priority score and propagate the change through tree
     """
 
-    def update(self, tree_index, priority):
+    def update(self, tree_index, priority) -> None:
         # Change = new priority score - former priority score
         change = priority - self.tree[tree_index]
         self.tree[tree_index] = priority
@@ -279,7 +279,7 @@ tree_index  0 0  0  We fill the leaves from left to right
                / \
               1   2
              / \ / \
-            3  4 5  [6] 
+            3  4 5  [6]
 
             If we are in leaf at index 6, we updated the priority score
             We need then to update index 2 node
@@ -291,7 +291,7 @@ tree_index  0 0  0  We fill the leaves from left to right
             self.tree[tree_index] += change
 
     """
-    Here we get the leaf_index, priority value of that leaf and experience 
+    Here we get the leaf_index, priority value of that leaf and experience
     associated with that index
     """
 
@@ -304,7 +304,7 @@ tree_index  0 0  0  We fill the leaves from left to right
          / \   / \
         3   4 5   6    -> storing priority for experiences
         Array type for storing:
-        [0,1,2,3,4,5,6]
+        [0,1,2,3,4,5,6].
         """
         parent_index = 0
 
@@ -335,7 +335,7 @@ tree_index  0 0  0  We fill the leaves from left to right
 
 class Memory:  # stored as ( s, a, r, s_ ) in SumTree
     """This SumTree code is modified version and the original code is from:
-    https://github.com/jaara/AI-blog/blob/master/Seaquest-DDQN-PER.py
+    https://github.com/jaara/AI-blog/blob/master/Seaquest-DDQN-PER.py.
     """
 
     PER_e = 0.01  # Hyperparameter that we use to avoid some experiences to
@@ -348,7 +348,7 @@ class Memory:  # stored as ( s, a, r, s_ ) in SumTree
 
     absolute_error_upper = 1.0  # clipped abs error
 
-    def __init__(self, capacity):
+    def __init__(self, capacity) -> None:
         # Making the tree
         """Remember that our tree is composed of a sum tree that contains the
         priority scores at his leaf
@@ -362,11 +362,11 @@ class Memory:  # stored as ( s, a, r, s_ ) in SumTree
 
     """
     Store a new experience in our tree
-    Each new experience have a score of max_prority (it will be then improved 
+    Each new experience have a score of max_prority (it will be then improved
     when we use this exp to train our DDQN)
     """
 
-    def store(self, experience):
+    def store(self, experience) -> None:
         # Find the max priority
         max_priority = np.max(self.tree.tree[-self.tree.capacity :])
 
@@ -379,10 +379,10 @@ class Memory:  # stored as ( s, a, r, s_ ) in SumTree
         self.tree.add(max_priority, experience)  # set the max p for new p
 
     """
-    - First, to sample a minibatch of k size, the range [0, priority_total] 
+    - First, to sample a minibatch of k size, the range [0, priority_total]
     is / into k ranges.
     - Then a value is uniformly sampled from each range
-    - We search in the sumtree, the experience where priority score 
+    - We search in the sumtree, the experience where priority score
     correspond to sample values are retrieved from.
     - Then, we calculate IS weights for each minibatch element
     """
@@ -442,7 +442,7 @@ class Memory:  # stored as ( s, a, r, s_ ) in SumTree
     Update the priorities on the tree
     """
 
-    def batch_update(self, tree_idx, abs_errors):
+    def batch_update(self, tree_idx, abs_errors) -> None:
         abs_errors += self.PER_e  # convert to abs and avoid 0
         clipped_errors = np.minimum(abs_errors, self.absolute_error_upper)
         ps = np.power(clipped_errors, self.PER_a)
@@ -743,7 +743,7 @@ if training:
                         target = rewards_mb[i] + gamma * q_target_next_state[i][action]
                         target_Qs_batch.append(target)
 
-                targets_mb = np.array([each for each in target_Qs_batch])
+                targets_mb = np.array(list(target_Qs_batch))
 
                 _, loss, absolute_errors = sess.run(
                     [DQNetwork.optimizer, DQNetwork.loss, DQNetwork.absolute_errors],

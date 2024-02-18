@@ -86,16 +86,13 @@ from Quoridor2 import Game, play_with_proba
 CHKPT = 100
 
 
-def play_to_explore_without_score_mp(player1, player2, n, i_start):
+def play_to_explore_without_score_mp(player1, player2, n, i_start) -> None:
     states = []
     i = i_start
     while i <= n + i_start:
         game = Game("")
         while (game.board_state.winner is None) and (i <= n + i_start):
-            if i % 2 == 0:
-                player = player1
-            else:
-                player = player2
+            player = player1 if i % 2 == 0 else player2
             state0 = game.board_state.to_universal_state(i % 2)
             game.coup(player(game, i % 2), i % 2, score_=False)
             states.append(state0)

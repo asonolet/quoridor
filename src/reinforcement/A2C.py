@@ -10,12 +10,12 @@ from quoridor.scorer import score_with_relative_path_length_dif
 
 
 class ActionSpace:
-    def __init__(self, wall_possibilities):
+    def __init__(self, wall_possibilities) -> None:
         self.n = len(wall_possibilities) + 4
 
 
 class Env:
-    def __init__(self, g, adverse_policy):
+    def __init__(self, g, adverse_policy) -> None:
         self.G = g
         self.g = self.G("")
         self.adverser = adverse_policy
@@ -85,7 +85,8 @@ class Env:
                     if (move[1] == pos[1]) & (move[0] > pos[0]):
                         action_ = move
         if action_ is None:
-            raise Exception("Unknown error")
+            msg = "Unknown error"
+            raise Exception(msg)
         return action_, True
 
     def _from_categorical_to_action(self, categorical_action):
@@ -149,7 +150,7 @@ class ProbabilityDistribution(tf.keras.Model):
 
 
 class Model(tf.keras.Model):
-    def __init__(self, num_actions):
+    def __init__(self, num_actions) -> None:
         super().__init__("mlp_policy")
         # Note: no tf.get_variable(), just simple Keras API!
         self.conv1 = kl.Conv2D(10, (3, 3), activation="relu")
@@ -208,7 +209,7 @@ class Model(tf.keras.Model):
 class A2CAgent:
     def __init__(
         self, model, lr=7e-4, gamma=0.2, value_c=0.5, entropy_c=1e-4, reprise=False,
-    ):
+    ) -> None:
         # `gamma` is the discount factor
         self.gamma = gamma
         # Coefficients are used for the loss terms.
@@ -225,10 +226,7 @@ class A2CAgent:
 
     def test(self, env, render=False):
         obs, done, ep_reward = env.reset(), 0, 0
-        if render:
-            plotter = Plotter()
-        else:
-            plotter = None
+        plotter = Plotter() if render else None
 
         while not done:
             action, _ = self.model.action_value((obs[0][None, :], obs[1][None, :]))
@@ -287,8 +285,8 @@ class A2CAgent:
         actions = np.empty((batch_sz,), dtype=np.int32)
         allowed_choices_proba = np.empty((batch_sz, n), dtype=np.int32)
         rewards, dones, values = np.empty((3, batch_sz))
-        observations1 = np.empty((batch_sz,) + env.observation_space[0].shape)
-        observations2 = np.empty((batch_sz,) + env.observation_space[1].shape)
+        observations1 = np.empty((batch_sz, *env.observation_space[0].shape))
+        observations2 = np.empty((batch_sz, *env.observation_space[1].shape))
 
         # Training loop: collect samples, send to optimizer, repeat updates
         # times.
