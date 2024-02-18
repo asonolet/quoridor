@@ -1,12 +1,16 @@
+import random  # Handling random number generation
+import warnings
+
 import tensorflow as tf  # Deep Learning library
 import numpy as np  # Handle matrices
 
-import random  # Handling random number generation
+from quoridor import Quoridor as qo
 
-import warnings  # This ignore all the warning messages that are normally
-
+# This ignore all the warning messages that are normally
 # printed during the training because of skiimage
 warnings.filterwarnings("ignore")
+
+game = qo.Game("Ready player 1")
 
 # MODEL HYPERPARAMETERS
 state_size = [100, 120, 4]  # Our input is a stack of 4 frames hence

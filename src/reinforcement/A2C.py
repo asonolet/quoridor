@@ -83,7 +83,7 @@ class Env:
                     if (move[1] == pos[1]) & (move[0] > pos[0]):
                         action_ = move
         if action_ is None:
-            Raise()
+            raise Exception("Unknown error")
         return action_, True
 
     def _from_categorical_to_action(self, categorical_action):

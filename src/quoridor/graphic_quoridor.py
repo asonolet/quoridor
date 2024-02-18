@@ -104,7 +104,7 @@ class TermPlotter:
         plt.scatter([4.5], [8.5], c="g", s=80)
 
     def _add_wall(self, player_number, move):
-        raise NotImplemented
+        raise NotImplementedError
 
     def _move(self, game, player_number, move):
         player_number = player_number % 2
@@ -149,16 +149,4 @@ class TermPlotter:
         .. todo::
            write a method to plot a game state from the ``universal_board_state`` variable given.
         """
-        raise NotImplemented
-
-
-if __name__ == "__main__":
-    from Quoridor2 import Game
-
-    game = Game("Partie 1")
-    plotter._add_wall(1, [0, 0, 1])
-    plt.pause(0.5)
-    plotter._move(game, 0, [4, 0, -1])
-    plt.pause(0.5)
-    plotter._move(game, 0, [4, 1, -1])
-    plt.pause(0.5)
+        raise NotImplementedError

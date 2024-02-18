@@ -1,9 +1,7 @@
-from typing import Tuple
 
 import numpy as np
 import time
 
-from numpy import ndarray
 from scipy import sparse as sp
 
 

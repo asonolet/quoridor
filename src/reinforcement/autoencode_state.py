@@ -1,10 +1,10 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import numpy as np
 import tensorflow as tf
 
-from tensorflow.keras.layers import Dense, Flatten, Conv2D
+from tensorflow.keras.layers import Dense
 from tensorflow.keras import Model
-from quoridor.Quoridor import *
 import os
 
 states = np.load(
@@ -75,7 +75,7 @@ test_loss = tf.keras.metrics.Mean(name="test_loss")
 @tf.function
 def accuracy(x, y):
     true_tab = tf.reduce_all(tf.equal(tf.math.round(x), tf.cast(y, tf.float32)), axis=1)
-    return tf.shape(true_tab[true_tab == True])[0] / tf.shape(x)[0]
+    return tf.shape(true_tab[true_tab])[0] / tf.shape(x)[0]
 
 
 @tf.function
