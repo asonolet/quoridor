@@ -1,9 +1,8 @@
 import random  # Handling random number generation
 import warnings
 
-import tensorflow as tf  # Deep Learning library
 import numpy as np  # Handle matrices
-
+import tensorflow as tf  # Deep Learning library
 from quoridor import Quoridor as qo
 
 # This ignore all the warning messages that are normally
@@ -63,13 +62,13 @@ class DDDQNNet:
             # tuple hence is like if we wrote
             # [None, 100, 120, 4]
             self.inputs_ = tf.placeholder(
-                tf.float32, [None, *state_size], name="inputs"
+                tf.float32, [None, *state_size], name="inputs",
             )
 
             self.ISWeights_ = tf.placeholder(tf.float32, [None, 1], name="IS_weights")
 
             self.actions_ = tf.placeholder(
-                tf.float32, [None, action_size], name="actions_"
+                tf.float32, [None, action_size], name="actions_",
             )
 
             # Remember that target_Q is the R(s,a) + ymax Qhat(s', a')
@@ -159,7 +158,7 @@ class DDDQNNet:
             # Agregating layer
             # Q(s,a) = V(s) + (A(s,a) - 1/|A| * sum A(s,a'))
             self.output = self.value + tf.subtract(
-                self.advantage, tf.reduce_mean(self.advantage, axis=1, keepdims=True)
+                self.advantage, tf.reduce_mean(self.advantage, axis=1, keepdims=True),
             )
 
             # Q is our predicted Q value.
@@ -167,15 +166,15 @@ class DDDQNNet:
 
             # The loss is modified because of PER
             self.absolute_errors = tf.abs(
-                self.target_Q - self.Q
+                self.target_Q - self.Q,
             )  # for updating Sumtree
 
             self.loss = tf.reduce_mean(
-                self.ISWeights_ * tf.squared_difference(self.target_Q, self.Q)
+                self.ISWeights_ * tf.squared_difference(self.target_Q, self.Q),
             )
 
             self.optimizer = tf.train.RMSPropOptimizer(self.learning_rate).minimize(
-                self.loss
+                self.loss,
             )
 
 
@@ -192,8 +191,7 @@ EnvNetwork = DDDQNNet(state_size, action_size, learning_rate, name="EnvNetwork")
 
 
 class SumTree:
-    """
-    This SumTree code is modified version of Morvan Zhou:
+    """This SumTree code is modified version of Morvan Zhou:
     https://github.com/MorvanZhou/Reinforcement-learning-with-tensorflow/blob/master/contents/5.2_Prioritized_Replay_DQN/RL_brain.py
     """
 
@@ -217,7 +215,7 @@ class SumTree:
         # Leaf nodes = capacity
         self.tree = np.zeros(2 * capacity - 1)
 
-        """ tree:
+        r""" tree:
             0
            / \
           0   0
@@ -238,7 +236,7 @@ class SumTree:
         # Look at what index we want to put the experience
         tree_index = self.data_pointer + self.capacity - 1
 
-        """ tree:
+        r""" tree:
             0
            / \
           0   0
@@ -273,7 +271,7 @@ tree_index  0 0  0  We fill the leaves from left to right
         while (
             tree_index != 0
         ):  # this method is faster than the recursive loop in the reference code
-            """
+            r"""
             Here we want to access the line above
             THE NUMBERS IN THIS TREE ARE THE INDEXES NOT THE PRIORITY VALUES
 
@@ -298,8 +296,7 @@ tree_index  0 0  0  We fill the leaves from left to right
     """
 
     def get_leaf(self, v):
-        """
-        Tree structure and array storage:
+        r"""Tree structure and array storage:
         Tree index:
              0         -> storing priority sum
             / \
@@ -320,13 +317,12 @@ tree_index  0 0  0  We fill the leaves from left to right
                 leaf_index = parent_index
                 break
 
-            else:  # downward search, always search for a higher priority node
-                if v <= self.tree[left_child_index]:
-                    parent_index = left_child_index
+            elif v <= self.tree[left_child_index]:
+                parent_index = left_child_index
 
-                else:
-                    v -= self.tree[left_child_index]
-                    parent_index = right_child_index
+            else:
+                v -= self.tree[left_child_index]
+                parent_index = right_child_index
 
         data_index = leaf_index - self.capacity + 1
 
@@ -338,8 +334,7 @@ tree_index  0 0  0  We fill the leaves from left to right
 
 
 class Memory:  # stored as ( s, a, r, s_ ) in SumTree
-    """
-    This SumTree code is modified version and the original code is from:
+    """This SumTree code is modified version and the original code is from:
     https://github.com/jaara/AI-blog/blob/master/Seaquest-DDQN-PER.py
     """
 
@@ -355,8 +350,7 @@ class Memory:  # stored as ( s, a, r, s_ ) in SumTree
 
     def __init__(self, capacity):
         # Making the tree
-        """
-        Remember that our tree is composed of a sum tree that contains the
+        """Remember that our tree is composed of a sum tree that contains the
         priority scores at his leaf
         And also a data array
         We don't use deque because it means that at each timestep our
@@ -409,7 +403,7 @@ class Memory:  # stored as ( s, a, r, s_ ) in SumTree
 
         # Here we increasing the PER_b each time we sample a new minibatch
         self.PER_b = np.min(
-            [1.0, self.PER_b + self.PER_b_increment_per_sampling]
+            [1.0, self.PER_b + self.PER_b_increment_per_sampling],
         )  # max = 1
 
         # Calculating the max_weight
@@ -528,7 +522,7 @@ With ϵ select a random action atat, otherwise select at=argmaxaQ(st,a)
 
 
 def predict_action(
-    explore_start, explore_stop, decay_rate, decay_step, state, possible_actions
+    explore_start, explore_stop, decay_rate, decay_step, state, possible_actions,
 ):
     # EPSILON GREEDY STRATEGY
     # Choose action a from state s using epsilon greedy.
@@ -538,7 +532,7 @@ def predict_action(
     # Here we'll use an improved version of our epsilon greedy strategy used
     # in Q-learning notebook
     explore_probability = explore_stop + (explore_start - explore_stop) * np.exp(
-        -decay_rate * decay_step
+        -decay_rate * decay_step,
     )
 
     if explore_probability > exp_exp_tradeoff:
@@ -660,9 +654,9 @@ if training:
                 # If the game is finished
                 if done:
                     # the episode ends so no next state
-                    next_state = np.zeros((120, 140), dtype=np.int)
+                    next_state = np.zeros((120, 140), dtype=int)
                     next_state, stacked_frames = stack_frames(
-                        stacked_frames, next_state, False
+                        stacked_frames, next_state, False,
                     )
 
                     # Set step = max_steps to end the episode
@@ -672,10 +666,10 @@ if training:
                     total_reward = np.sum(episode_rewards)
 
                     print(
-                        "Episode: {}".format(episode),
-                        "Total reward: {}".format(total_reward),
-                        "Training loss: {:.4f}".format(loss),
-                        "Explore P: {:.4f}".format(explore_probability),
+                        f"Episode: {episode}",
+                        f"Total reward: {total_reward}",
+                        f"Training loss: {loss:.4f}",
+                        f"Explore P: {explore_probability:.4f}",
                     )
 
                     # Add experience to memory
@@ -688,7 +682,7 @@ if training:
 
                     # Stack the frame of the next_state
                     next_state, stacked_frames = stack_frames(
-                        stacked_frames, next_state, False
+                        stacked_frames, next_state, False,
                     )
 
                     # Add experience to memory
@@ -723,7 +717,7 @@ if training:
 
                 # Get Q values for next_state
                 q_next_state = sess.run(
-                    DQNetwork.output, feed_dict={DQNetwork.inputs_: next_states_mb}
+                    DQNetwork.output, feed_dict={DQNetwork.inputs_: next_states_mb},
                 )
 
                 # Calculate Qtarget for all actions that state
@@ -734,7 +728,7 @@ if training:
 
                 # Set Q_target = r if the episode ends at s+1, otherwise set
                 # Q_target = r + gamma * Qtarget(s',a')
-                for i in range(0, len(batch)):
+                for i in range(len(batch)):
                     terminal = dones_mb[i]
 
                     # We got a'

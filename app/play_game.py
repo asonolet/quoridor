@@ -1,9 +1,8 @@
 import time
 
 import numpy as np
-
-from quoridor.game import Game
 from quoridor import policy as po
+from quoridor.game import Game
 
 if __name__ == "__main__":
     game = Game("partie 1")

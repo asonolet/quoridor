@@ -2,10 +2,10 @@
 
 # from tensorflow.keras.layers import Dense
 # from tensorflow.keras import Model
-import numpy as np
 import multiprocessing as mp
-from Quoridor2 import Game, play_with_proba
 
+import numpy as np
+from Quoridor2 import Game, play_with_proba
 
 # class AIPlayer(Model):
 #     def __init__(self):
@@ -102,7 +102,7 @@ def play_to_explore_without_score_mp(player1, player2, n, i_start):
             if i % CHKPT == 0:
                 print(
                     mp.current_process().name + " avencement : %.2d %% "
-                    "writting file %.3d" % (((i - i_start) / n * 100), i // CHKPT)
+                    "writting file %.3d" % (((i - i_start) / n * 100), i // CHKPT),
                 )
                 np.save(
                     "play_with_proba_without_score/states_%.3d.npy" % (i // CHKPT),

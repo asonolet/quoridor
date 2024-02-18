@@ -5,7 +5,6 @@ import tensorflow as tf
 import tensorflow.keras.layers as kl
 import tensorflow.keras.losses as kls
 import tensorflow.keras.optimizers as ko
-
 from quoridor.graphic_quoridor import Plotter
 from quoridor.scorer import score_with_relative_path_length_dif
 
@@ -37,7 +36,7 @@ class Env:
         categorical_move_ = categorical_action_ + 128
 
         action_, is_correct = self._from_categorical_to_action_no_check(
-            categorical_move_
+            categorical_move_,
         )
         if plotter is not None:
             print(action_, is_correct)
@@ -98,7 +97,7 @@ class Env:
                 action_ = self.g.all_walls_choices[ind, :]
                 scalar_action = 100 * action_[0] + 10 * action_[1] + action_[2]
                 all_walls_available = np.transpose(
-                    np.nonzero(self.g.board_state.wall_possibilities > 0)
+                    np.nonzero(self.g.board_state.wall_possibilities > 0),
                 )
                 test_set = (
                     100 * all_walls_available[:, 0]
@@ -188,7 +187,7 @@ class Model(tf.keras.Model):
         move_choice = self.move_choice(hidden)
         # move_choice_allowed = np.where(poss, move_choice, np.inf)
         move_choice_allowed = tf.where(
-            poss > 0.0, move_choice, -np.inf * tf.ones_like(move_choice)
+            poss > 0.0, move_choice, -np.inf * tf.ones_like(move_choice),
         )
         return move_choice_allowed, self.value(hidden), move_choice, hidden
         # self.logits(hidden),
@@ -208,7 +207,7 @@ class Model(tf.keras.Model):
 
 class A2CAgent:
     def __init__(
-        self, model, lr=7e-4, gamma=0.2, value_c=0.5, entropy_c=1e-4, reprise=False
+        self, model, lr=7e-4, gamma=0.2, value_c=0.5, entropy_c=1e-4, reprise=False,
     ):
         # `gamma` is the discount factor
         self.gamma = gamma
@@ -235,7 +234,7 @@ class A2CAgent:
             action, _ = self.model.action_value((obs[0][None, :], obs[1][None, :]))
 
             allowed_choices_proba, _, choices_proba, __ = self.model(
-                (obs[0][None, :], obs[1][None, :])
+                (obs[0][None, :], obs[1][None, :]),
             )  # , \
             #
             obs, reward, done, plotter = env.step(action, plotter)
@@ -300,10 +299,10 @@ class A2CAgent:
                 observations1[step] = next_obs[0].copy()
                 observations2[step] = next_obs[1].copy()
                 actions[step], values[step] = self.model.action_value(
-                    (next_obs[0][None, :], next_obs[1][None, :])
+                    (next_obs[0][None, :], next_obs[1][None, :]),
                 )
                 allowed_choices_proba[step, :], _, _, __ = self.model(
-                    (next_obs[0][None, :], next_obs[1][None, :])
+                    (next_obs[0][None, :], next_obs[1][None, :]),
                 )
                 next_obs, rewards[step], dones[step], _ = env.step(actions[step])
                 # mettre en place une boucle qui rapelle un step
@@ -319,11 +318,11 @@ class A2CAgent:
                     next_obs = env.reset()
                     logging.info(
                         "Episode: %03d, Reward: %03d"
-                        % (len(ep_rewards) - 1, ep_rewards[-2])
+                        % (len(ep_rewards) - 1, ep_rewards[-2]),
                     )
 
             _, next_value = self.model.action_value(
-                (next_obs[0][None, :], next_obs[1][None, :])
+                (next_obs[0][None, :], next_obs[1][None, :]),
             )
 
             returns, advs = self._returns_advantages(rewards, dones, values, next_value)

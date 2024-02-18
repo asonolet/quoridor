@@ -17,3 +17,4 @@ all = ["tensorflow", "matplotlib"]
 
 [tool.ruff.lint]
 select = ["ALL"]
+ignore = ["ANN101"]

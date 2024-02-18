@@ -1,14 +1,19 @@
+from __future__ import annotations
+
 import numpy as np
 from scipy import sparse as sp
 
 
 class Player:
-    """each player gets a name, a number of wall, a position (i,j) and a
-    position k
-    :param player_number:
-    """
+    """Player data holder."""
 
     def __init__(self, player_number: int) -> None:
+        """Player class initialisation.
+
+        Each player gets a name, a number of wall, a position (i,j) and a position k.
+
+        :param player_number:
+        """
         self.name = player_number
         self.n_tuiles = 10
         if player_number == 0:
@@ -17,11 +22,11 @@ class Player:
             self.position = (4, 8)
 
     @property
-    def k_pos(self):
+    def k_pos(self) -> int:
         return 10 * self.position[0] + self.position[1]
 
 
-def _init_free_paths():
+def _init_free_paths() -> sp.dok_matrix:
     node_links = np.zeros((89, 89), dtype=bool)
     for x in range(9):
         for y in range(9):
@@ -37,11 +42,18 @@ def _init_free_paths():
 
 
 class BoardState:
-    """This object is used to play at one instant. A game is a succession of BoardState.
+    """BoardState object is used to play at one instant.
+
+    A game is a succession of BoardState.
     Methods to pass from one BoardState to an other are declared here.
     """
 
-    def __init__(self, first_player=0) -> None:
+    def __init__(self, first_player: int =0) -> None:
+        """Initializes the board state as the begining of a game.
+
+        :param first_player: the first player to play. Player 0 start
+        from bottom and player 1 at top (j=8).
+        """
         self.wall_possibilities = np.ones((8, 8, 2))
         self.players = [Player(0), Player(1)]
         self.played_coup = 0
@@ -50,19 +62,20 @@ class BoardState:
         self.winner = -1
 
     @property
-    def next_player(self):
+    def next_player(self) -> int:
         return (self._first_player + self.played_coup) % 2
 
     @property
-    def last_player(self):
+    def last_player(self) -> int:
         return (self._first_player + self.played_coup + 1) % 2
 
     @property
-    def player(self):
+    def player(self) -> Player:
         return self.players[self.next_player]
 
-    def update_player_positions(self, new_position) -> None:
-        """Update player position and actualize the winner
+    def update_player_positions(self, new_position: tuple[int]) -> None:
+        """Update player position and actualize the winner.
+
         :param new_position: [i,j,-1]
         :param player_number: int
         :return:
@@ -75,8 +88,10 @@ class BoardState:
             self.winner = self.next_player
         self.played_coup += 1
 
-    def add_new_wall(self, new_position) -> None:
-        """Add wall by modifying wall possibilities,
+    def add_new_wall(self, new_position: tuple[int]) -> None:
+        """Add wall.
+
+        Modify wall possibilities,
         update free_paths,
         update player remaining walls number.
 
@@ -113,8 +128,10 @@ class BoardState:
             self.free_paths.pop((k + 11, k + 1))
         self.played_coup += 1
 
-    def remove_wall(self, new_position) -> None:
-        """Add one wall in remaining player walls,
+    def remove_wall(self, new_position: tuple[int]) -> None:
+        """Undo an add wall operation.
+
+        Add one wall in remaining player walls,
         update wall possibilities,
         update free_paths.
 

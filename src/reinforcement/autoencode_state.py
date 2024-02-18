@@ -1,14 +1,13 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
+
+import os
 
 import numpy as np
 import tensorflow as tf
-
-from tensorflow.keras.layers import Dense
 from tensorflow.keras import Model
-import os
+from tensorflow.keras.layers import Dense
 
 states = np.load(
-    "play_with_proba_without_score/" + os.listdir("play_with_proba_without_score/")[1]
+    "play_with_proba_without_score/" + os.listdir("play_with_proba_without_score/")[1],
 )
 n, p = states.shape
 p = p - 6
@@ -110,12 +109,12 @@ for file in os.listdir("play_with_proba_without_score/")[:100]:
     np.random.shuffle(states)
 
     train_ds = (
-        tf.data.Dataset.from_tensor_slices((states[: int(train_ratio * n), :-6]))
+        tf.data.Dataset.from_tensor_slices(states[: int(train_ratio * n), :-6])
         .shuffle(100)
         .batch(32)
     )
     test_ds = tf.data.Dataset.from_tensor_slices(
-        (states[int(train_ratio * n) :, :-6])
+        states[int(train_ratio * n) :, :-6],
     ).batch(32)
     # TRAINING LOOP
     EPOCHS = 10
@@ -136,7 +135,7 @@ for file in os.listdir("play_with_proba_without_score/")[:100]:
                     epoch,
                     train_loss.result(),
                     test_loss.result(),
-                )
+                ),
             )
             test_state = states[int(train_ratio * n) :, :-6]
             pred = test_step(test_state)
