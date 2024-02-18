@@ -53,7 +53,6 @@ class Game:
 
     def get_back(self, n):
         for i_ in range(n):
-
             choice = self.coup_joues.pop()
 
             if (len(choice) == 2) or (choice[2] == -1):
@@ -77,7 +76,10 @@ class Game:
             new_coup = (k // 10, k % 10, -1)
             new_position = new_coup[:2]
             # In this case, both players are next one another
-            if new_position == self.board_state.players[self.board_state.last_player].position:
+            if (
+                new_position
+                == self.board_state.players[self.board_state.last_player].position
+            ):
                 old_pos = np.array(self.board_state.player.position)
                 new_position = np.array(new_position)
                 new_coup = tuple(np.r_[2 * new_position - old_pos, -1])

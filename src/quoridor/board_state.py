@@ -52,7 +52,7 @@ class BoardState:
         self.free_paths = _init_free_paths()
         self.winner = -1
 
-    @property 
+    @property
     def next_player(self):
         return (self._first_player + self.played_coup) % 2
 
@@ -62,7 +62,7 @@ class BoardState:
 
     @property
     def player(self):
-      return self.players[self.next_player]
+        return self.players[self.next_player]
 
     def update_player_positions(self, new_position):
         """
@@ -73,8 +73,10 @@ class BoardState:
         """
         self.player.position = tuple(new_position[:2])
 
-        if (self.next_player and new_position[1] == 0) or (not self.next_player and new_position[1] == 8):
-                self.winner = self.next_player
+        if (self.next_player and new_position[1] == 0) or (
+            not self.next_player and new_position[1] == 8
+        ):
+            self.winner = self.next_player
         self.played_coup += 1
 
     def add_new_wall(self, new_position):

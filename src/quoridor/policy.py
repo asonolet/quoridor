@@ -19,9 +19,7 @@ def play_with_proba(game):
     return res[np.random.choice(len(cost), p=cost_)]
 
 
-def play_seeing_future_rec(
-    game, n_sim=3, n_future=3, counter=0, returned_scores=None
-):
+def play_seeing_future_rec(game, n_sim=3, n_future=3, counter=0, returned_scores=None):
     if game.board_state.winner != -1:
         if game.board_state.next_player == game.board_state.winner:
             return 1000
@@ -31,6 +29,7 @@ def play_seeing_future_rec(
     if 2 * n_future == counter:
         choices, scores = game.evaluate_all_possibilities()
         return [scores[-1]]
+
 
 #     choices, _ = game.evaluate_all_possibilities((player_number + counter) % 2)
 #     n_sim_possible = min(n_sim, len(choices))
