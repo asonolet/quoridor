@@ -1,9 +1,6 @@
-import time
-
 import numpy as np
-from scipy import sparse as sp
 
-from quoridor.board_state import BoardState, Player
+from quoridor.board_state import BoardState
 from quoridor.scorer import score_with_relative_path_length_dif
 
 
@@ -46,7 +43,7 @@ class Game:
         else:
             self.board_state.add_new_wall(choice, player_number)
         if score_:
-            dist = score_with_relative_path_length_dif(board_state, player_number)
+            dist = score_with_relative_path_length_dif(self.board_state, player_number)
             if get_back:
                 self.get_back(1)
             return dist

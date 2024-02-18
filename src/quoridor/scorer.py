@@ -1,3 +1,4 @@
+import numpy as np
 from scipy import sparse as sp
 
 from quoridor.board_state import BoardState
@@ -23,9 +24,7 @@ def score_with_relative_path_length_dif(bs: BoardState, player_number: int) -> f
     )
     l2 = np.min(
         [
-            dist_graph[
-                bs.player[1 - player_number].k_pos, 8 * player_number + 10 * i_
-            ]
+            dist_graph[bs.player[1 - player_number].k_pos, 8 * player_number + 10 * i_]
             for i_ in range(9)
         ]
     )

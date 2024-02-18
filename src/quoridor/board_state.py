@@ -1,5 +1,5 @@
 import numpy as np
-import scipy import sparse as sp
+from scipy import sparse as sp
 
 
 class Player:
