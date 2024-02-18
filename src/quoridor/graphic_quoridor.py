@@ -1,5 +1,4 @@
-"""
-This module allaws to plot a game in order to better understanding how is the agent learning
+"""This module allaws to plot a game in order to better understanding how is the agent learning
 """
 
 import matplotlib.pyplot as plt
@@ -7,14 +6,13 @@ import numpy as np
 
 
 class Plotter:
-    """
-    The ``Plotter`` object is used to plot a game. It can only work if it plots the game from the begining, it doesn't have yet any feature to plot a game from any state it is in.
+    """The ``Plotter`` object is used to plot a game. It can only work if it plots the game from the begining, it doesn't have yet any feature to plot a game from any state it is in.
     """
 
     def __init__(self):
         plt.figure()
-        columns = [i for i in range(0, 10)]
-        rows = [i for i in range(0, 10)]
+        columns = [i for i in range(10)]
+        rows = [i for i in range(10)]
         grid_x, grid_y = np.meshgrid(columns, rows)
         for i in range(len(grid_x)):
             plt.plot(grid_x[i], grid_y[i], "k", linewidth=1)
@@ -51,7 +49,7 @@ class Plotter:
                 if np.all(
                     point._offsets
                     == np.array([game.board_state.player[player_number].position])
-                    + np.array([[0.5, 0.5]])
+                    + np.array([[0.5, 0.5]]),
                 ):
                     a.collections.pop(i)
             plt.pause(0.2)
@@ -62,10 +60,10 @@ class Plotter:
             return
 
     def play(self, game, player_number, move):
-        """
-        Used to update the plot of the game.
+        """Used to update the plot of the game.
 
         Args:
+        ----
            game (Game): the game to read
            player_number (int): the id of the player whose turn it is
            move (tuple): the move played
@@ -78,24 +76,22 @@ class Plotter:
         plt.pause(0.1)
 
     def load_board(self, universal_board):
-        """
-        .. todo::
-           write a method to plot a game state from the ``universal_board_state`` variable given.
+        """.. todo::
+        write a method to plot a game state from the ``universal_board_state`` variable given.
         """
         return
 
 
 class TermPlotter:
-    """
-    The ``TermPlotter`` object is used to plot a game on the terminal. It can only work if it plots the game from the begining, it doesn't have yet any feature to plot a game from any state it is in.
+    """The ``TermPlotter`` object is used to plot a game on the terminal. It can only work if it plots the game from the begining, it doesn't have yet any feature to plot a game from any state it is in.
     """
 
     wall_line = "+  " * 10 + "+"
     pos_line = "| " + "  " * 9 + "|"
 
     def __init__(self):
-        columns = [i for i in range(0, 10)]
-        rows = [i for i in range(0, 10)]
+        columns = [i for i in range(10)]
+        rows = [i for i in range(10)]
         grid_x, grid_y = np.meshgrid(columns, rows)
         for i in range(len(grid_x)):
             plt.plot(grid_x[i], grid_y[i], "k", linewidth=1)
@@ -118,7 +114,7 @@ class TermPlotter:
                 if np.all(
                     point._offsets
                     == np.array([game.board_state.player[player_number].position])
-                    + np.array([[0.5, 0.5]])
+                    + np.array([[0.5, 0.5]]),
                 ):
                     a.collections.pop(i)
             plt.pause(0.2)
@@ -129,10 +125,10 @@ class TermPlotter:
             return
 
     def play(self, game, player_number, move):
-        """
-        Used to update the plot of the game.
+        """Used to update the plot of the game.
 
         Args:
+        ----
            game (Game): the game to read
            player_number (int): the id of the player whose turn it is
            move (tuple): the move played
@@ -145,8 +141,7 @@ class TermPlotter:
         plt.pause(0.1)
 
     def load_board(self, universal_board):
-        """
-        .. todo::
-           write a method to plot a game state from the ``universal_board_state`` variable given.
+        """.. todo::
+        write a method to plot a game state from the ``universal_board_state`` variable given.
         """
         raise NotImplementedError

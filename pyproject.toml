@@ -14,3 +14,6 @@ dependencies = [
 ml = ["tensorflow"]
 x = ["matplotlib"]
 all = ["tensorflow", "matplotlib"]
+
+[tool.ruff.lint]
+select = ["ALL"]

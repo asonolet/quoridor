@@ -3,8 +3,7 @@ from scipy import sparse as sp
 
 
 class Player:
-    """
-    each player gets a name, a number of wall, a position (i,j) and a
+    """each player gets a name, a number of wall, a position (i,j) and a
     position k
     :param player_number:
     """
@@ -39,8 +38,7 @@ def _init_free_paths():
 
 
 class BoardState:
-    """
-    This object is used to play at one instant. A game is a succession of BoardState.
+    """This object is used to play at one instant. A game is a succession of BoardState.
     Methods to pass from one BoardState to an other are declared here.
     """
 
@@ -65,8 +63,7 @@ class BoardState:
         return self.players[self.next_player]
 
     def update_player_positions(self, new_position):
-        """
-        update player position and actualize the winner
+        """Update player position and actualize the winner
         :param new_position: [i,j,-1]
         :param player_number: int
         :return:
@@ -80,8 +77,7 @@ class BoardState:
         self.played_coup += 1
 
     def add_new_wall(self, new_position):
-        """
-        add wall by modifying wall possibilities,
+        """Add wall by modifying wall possibilities,
         update free_paths,
         update player remaining walls number
 
@@ -119,8 +115,7 @@ class BoardState:
         self.played_coup += 1
 
     def remove_wall(self, new_position):
-        """
-        add one wall in remaining player walls,
+        """Add one wall in remaining player walls,
         update wall possibilities,
         update free_paths
 
@@ -137,21 +132,21 @@ class BoardState:
         if new_position[2] == 0:
             if x < 7:
                 self.wall_possibilities[x + 1, y, 0] = min(
-                    1, self.wall_possibilities[x + 1, y, 0] + 1
+                    1, self.wall_possibilities[x + 1, y, 0] + 1,
                 )
             if x > 0:
                 self.wall_possibilities[x - 1, y, 0] = min(
-                    1, self.wall_possibilities[x - 1, y, 0] + 1
+                    1, self.wall_possibilities[x - 1, y, 0] + 1,
                 )
 
         if new_position[2] == 1:
             if y < 7:
                 self.wall_possibilities[x, y + 1, 1] = min(
-                    1, self.wall_possibilities[x, y + 1, 1] + 1
+                    1, self.wall_possibilities[x, y + 1, 1] + 1,
                 )
             if y > 0:
                 self.wall_possibilities[x, y - 1, 1] = min(
-                    1, self.wall_possibilities[x, y - 1, 1] + 1
+                    1, self.wall_possibilities[x, y - 1, 1] + 1,
                 )
 
         # adding the path that was blocked

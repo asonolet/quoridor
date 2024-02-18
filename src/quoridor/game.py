@@ -5,8 +5,7 @@ from quoridor.scorer import score_with_relative_path_length_dif
 
 
 class Game:
-    """
-    This object contains anything a game needs to be played
+    """This object contains anything a game needs to be played
     """
 
     def __init__(self, game_name):
@@ -18,7 +17,7 @@ class Game:
         self.coup_joues.append((4, 8, -1))
 
         self.all_walls_choices = np.transpose(
-            np.nonzero(self.board_state.wall_possibilities > 0)
+            np.nonzero(self.board_state.wall_possibilities > 0),
         )
         self.set = (
             100 * self.all_walls_choices[:, 0]
@@ -27,8 +26,7 @@ class Game:
         )
 
     def coup(self, choice=None, get_back=False, score_=True):
-        """
-        update board_state
+        """Update board_state
         if score return relative diff length between paths
         if get back is True, don't change the board state
         :param choice:
@@ -71,7 +69,7 @@ class Game:
     def _all_moves(self):
         all_moves = []
         for _, k in self.board_state.free_paths[
-            self.board_state.player.k_pos, :
+            self.board_state.player.k_pos, :,
         ].keys():
             new_coup = (k // 10, k % 10, -1)
             new_position = new_coup[:2]
@@ -97,7 +95,7 @@ class Game:
         all_moves = self._all_moves()
         if self.board_state.player.n_tuiles > 0:
             all_walls = np.transpose(
-                np.nonzero(self.board_state.wall_possibilities > 0)
+                np.nonzero(self.board_state.wall_possibilities > 0),
             )
             all_coups = np.concatenate((all_moves, all_walls))
         else:
@@ -120,8 +118,7 @@ class Game:
         return is_move_allowed
 
     def evaluate_all_choices(self):
-        """
-        for a given board_state, test all possibilities and returns a vector
+        """For a given board_state, test all possibilities and returns a vector
         where the place of the score always match the same choice. If the
         choice is not available, score is 0
         :return: score vector of length 8*8*2 + 4
@@ -131,7 +128,7 @@ class Game:
         # remplir un tableau de zéros aux bons indices
         if self.board_state.player.n_tuiles > 0:
             all_walls_available = np.transpose(
-                np.nonzero(self.board_state.wall_possibilities > 0)
+                np.nonzero(self.board_state.wall_possibilities > 0),
             )
             test_set = (
                 100 * all_walls_available[:, 0]
@@ -167,18 +164,16 @@ class Game:
         return scores
 
     def evaluate_all_possibilities(self):
-        """
-        for a given board state, test all possibilities,
+        """For a given board state, test all possibilities,
         score them for player i
         sort them in ascending order
         :param player_number: int
         :return: best possibilities, cost (increasing)
         """
-
         all_coups = self.all_coups()
         # attention de temps en temps all_coups est de dimension 1 et ça plante
         all_scores = np.apply_along_axis(
-            lambda x: self.coup(x, get_back=True), 1, all_coups
+            lambda x: self.coup(x, get_back=True), 1, all_coups,
         )
 
         tri = all_scores.argsort()
