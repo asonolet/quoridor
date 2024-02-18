@@ -26,7 +26,7 @@ class Game:
             + self.all_walls_choices[:, 2]
         )
 
-    def coup(self, choice=None, player_number=1, get_back=False, score_=True):
+    def coup(self, choice=None, get_back=False, score_=True):
         """
         update board_state
         if score return relative diff length between paths
@@ -39,11 +39,11 @@ class Game:
         """
         self.coup_joues.append(choice)
         if choice[2] == -1:
-            self.board_state.update_player_positions(choice[:2], player_number)
+            self.board_state.update_player_positions(choice[:2])
         else:
-            self.board_state.add_new_wall(choice, player_number)
+            self.board_state.add_new_wall(choice)
         if score_:
-            dist = score_with_relative_path_length_dif(self.board_state, player_number)
+            dist = score_with_relative_path_length_dif(self.board_state)
             if get_back:
                 self.get_back(1)
             return dist
@@ -53,16 +53,15 @@ class Game:
 
     def get_back(self, n):
         for i_ in range(n):
-            player_number = (len(self.coup_joues) - 1) % 2
 
             choice = self.coup_joues.pop()
 
             if (len(choice) == 2) or (choice[2] == -1):
                 pos = self.last_pos
-                self.board_state.update_player_positions(pos, player_number)
+                self.board_state.update_player_positions(pos)
                 self.board_state.winner = -1
             elif len(choice) == 3:
-                self.board_state.remove_wall(choice, player_number)
+                self.board_state.remove_wall(choice)
 
     @property
     def last_pos(self):
@@ -70,16 +69,16 @@ class Game:
             if len(self.coup_joues[i_]) == 2 or self.coup_joues[i_][2] == -1:
                 return self.coup_joues[i_]
 
-    def _all_moves(self, player_number: int):
+    def _all_moves(self):
         all_moves = []
         for _, k in self.board_state.free_paths[
-            self.board_state.player[player_number].k_pos, :
+            self.board_state.player.k_pos, :
         ].keys():
             new_coup = (k // 10, k % 10, -1)
             new_position = new_coup[:2]
             # In this case, both players are next one another
-            if new_position == self.board_state.player[1 - player_number].position:
-                old_pos = np.array(self.board_state.player[player_number].position)
+            if new_position == self.board_state.players[self.board_state.last_player].position:
+                old_pos = np.array(self.board_state.player.position)
                 new_position = np.array(new_position)
                 new_coup = tuple(np.r_[2 * new_position - old_pos, -1])
                 if (0 < new_coup[0] < 9) & (0 < new_coup[1] < 9):
@@ -92,9 +91,9 @@ class Game:
                 all_moves.append(new_coup)
         return all_moves
 
-    def all_coups(self, player_number: int):
-        all_moves = self._all_moves(player_number)
-        if self.board_state.player[player_number].n_tuiles > 0:
+    def all_coups(self):
+        all_moves = self._all_moves()
+        if self.board_state.player.n_tuiles > 0:
             all_walls = np.transpose(
                 np.nonzero(self.board_state.wall_possibilities > 0)
             )
@@ -103,9 +102,9 @@ class Game:
             all_coups = np.array(all_moves)
         return all_coups
 
-    def moves_allowed(self, player_number: int):
-        all_moves = self._all_moves(player_number)
-        pos = self.board_state.player[player_number].position
+    def moves_allowed(self):
+        all_moves = self._all_moves()
+        pos = self.board_state.player.position
         is_move_allowed = np.zeros((4,))
         for move in all_moves:
             if (move[0] == pos[0]) & (move[1] > pos[1]):
@@ -118,18 +117,17 @@ class Game:
                 is_move_allowed[3] = 1
         return is_move_allowed
 
-    def evaluate_all_choices(self, player_number: int):
+    def evaluate_all_choices(self):
         """
         for a given board_state, test all possibilities and returns a vector
         where the place of the score always match the same choice. If the
         choice is not available, score is 0
-        :param player_number:
         :return: score vector of length 8*8*2 + 4
         """
         # d'abord pour les murs, je veux la liste des indices qui
         # correspondent aux coups, et les coups associés comme ça je peux
         # remplir un tableau de zéros aux bons indices
-        if self.board_state.player[player_number].n_tuiles > 0:
+        if self.board_state.player.n_tuiles > 0:
             all_walls_available = np.transpose(
                 np.nonzero(self.board_state.wall_possibilities > 0)
             )
@@ -142,7 +140,7 @@ class Game:
             indices = np.nonzero(isin)
             scores = -1000 * np.ones(len(isin))
             scores[indices] = np.apply_along_axis(
-                lambda x: self.coup(x, player_number, get_back=True),
+                lambda x: self.coup(x, get_back=True),
                 1,
                 all_walls_available,
             )
@@ -151,22 +149,22 @@ class Game:
 
         # reste a faire les 4 mouvements possibles, +/-/gauche/droite
         moves_scores = [-1000.0] * 4
-        all_moves = self._all_moves(player_number)
-        pos = self.board_state.player[player_number].position
+        all_moves = self._all_moves()
+        pos = self.board_state.player.position
         for move in all_moves:
             if (move[0] == pos[0]) & (move[1] > pos[1]):
-                moves_scores[0] = self.coup(move, player_number, get_back=True)
+                moves_scores[0] = self.coup(move, get_back=True)
             if (move[0] == pos[0]) & (move[1] < pos[1]):
-                moves_scores[1] = self.coup(move, player_number, get_back=True)
+                moves_scores[1] = self.coup(move, get_back=True)
             if (move[1] == pos[1]) & (move[0] < pos[0]):
-                moves_scores[2] = self.coup(move, player_number, get_back=True)
+                moves_scores[2] = self.coup(move, get_back=True)
             if (move[1] == pos[1]) & (move[0] > pos[0]):
-                moves_scores[3] = self.coup(move, player_number, get_back=True)
+                moves_scores[3] = self.coup(move, get_back=True)
         scores = np.r_[scores, moves_scores]
         scores[scores != -1000] -= np.mean(scores[scores != -1000])
         return scores
 
-    def evaluate_all_possibilities(self, player_number):
+    def evaluate_all_possibilities(self):
         """
         for a given board state, test all possibilities,
         score them for player i
@@ -174,23 +172,16 @@ class Game:
         :param player_number: int
         :return: best possibilities, cost (increasing)
         """
-        # mask = self.board_state.wall_possibilities > 0  # type: ndarray
-        # all_coups = np.transpose(np.nonzero(mask))
-        all_coups = self.all_coups(player_number)
+
+        all_coups = self.all_coups()
         # attention de temps en temps all_coups est de dimension 1 et ça plante
         all_scores = np.apply_along_axis(
-            lambda x: self.coup(x, player_number, get_back=True), 1, all_coups
+            lambda x: self.coup(x, get_back=True), 1, all_coups
         )
 
         tri = all_scores.argsort()
         all_scores = all_scores[tri]
         all_coups = all_coups[tri, :]
 
-        # best_scores = all_scores[-min(len(all_coups),
-        # self.n_coups_simultanes):]
-        # mask = best_scores != -1000
-        # best_scores = best_scores[mask]
-        # best_coups = all_coups[-min(len(all_coups),
-        #                             self.n_coups_simultanes):, :][mask, :]
         # return best_coups, best_scores
         return all_coups, all_scores
