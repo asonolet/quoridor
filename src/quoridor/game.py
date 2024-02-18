@@ -5,10 +5,9 @@ from quoridor.scorer import score_with_relative_path_length_dif
 
 
 class Game:
-    """This object contains anything a game needs to be played
-    """
+    """This object contains anything a game needs to be played."""
 
-    def __init__(self, game_name):
+    def __init__(self, game_name) -> None:
         self.game_name = game_name
         self.board_state = BoardState()
 
@@ -48,8 +47,10 @@ class Game:
 
         if get_back:
             self.get_back(1)
+            return None
+        return None
 
-    def get_back(self, n):
+    def get_back(self, n) -> None:
         for i_ in range(n):
             choice = self.coup_joues.pop()
 
@@ -65,12 +66,13 @@ class Game:
         for i_ in range(len(self.coup_joues) - 2, -1, -2):
             if len(self.coup_joues[i_]) == 2 or self.coup_joues[i_][2] == -1:
                 return self.coup_joues[i_]
+        return None
 
     def _all_moves(self):
         all_moves = []
         for _, k in self.board_state.free_paths[
             self.board_state.player.k_pos, :,
-        ].keys():
+        ]:
             new_coup = (k // 10, k % 10, -1)
             new_position = new_coup[:2]
             # In this case, both players are next one another
@@ -121,7 +123,7 @@ class Game:
         """For a given board_state, test all possibilities and returns a vector
         where the place of the score always match the same choice. If the
         choice is not available, score is 0
-        :return: score vector of length 8*8*2 + 4
+        :return: score vector of length 8*8*2 + 4.
         """
         # d'abord pour les murs, je veux la liste des indices qui
         # correspondent aux coups, et les coups associés comme ça je peux
@@ -168,7 +170,7 @@ class Game:
         score them for player i
         sort them in ascending order
         :param player_number: int
-        :return: best possibilities, cost (increasing)
+        :return: best possibilities, cost (increasing).
         """
         all_coups = self.all_coups()
         # attention de temps en temps all_coups est de dimension 1 et ça plante

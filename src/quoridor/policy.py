@@ -29,6 +29,7 @@ def play_seeing_future_rec(game, n_sim=3, n_future=3, counter=0, returned_scores
     if 2 * n_future == counter:
         choices, scores = game.evaluate_all_possibilities()
         return [scores[-1]]
+    return None
 
 
 #     choices, _ = game.evaluate_all_possibilities((player_number + counter) % 2)

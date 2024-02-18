@@ -8,7 +8,7 @@ class Player:
     :param player_number:
     """
 
-    def __init__(self, player_number: int):
+    def __init__(self, player_number: int) -> None:
         self.name = player_number
         self.n_tuiles = 10
         if player_number == 0:
@@ -33,8 +33,7 @@ def _init_free_paths():
                 node_links[10 * x + y, 10 * (x + 1) + y] = 1
             if x > 0:
                 node_links[10 * x + y, 10 * (x - 1) + y] = 1
-    links_graph = sp.dok_matrix(node_links)
-    return links_graph
+    return sp.dok_matrix(node_links)
 
 
 class BoardState:
@@ -42,7 +41,7 @@ class BoardState:
     Methods to pass from one BoardState to an other are declared here.
     """
 
-    def __init__(self, first_player=0):
+    def __init__(self, first_player=0) -> None:
         self.wall_possibilities = np.ones((8, 8, 2))
         self.players = [Player(0), Player(1)]
         self.played_coup = 0
@@ -62,7 +61,7 @@ class BoardState:
     def player(self):
         return self.players[self.next_player]
 
-    def update_player_positions(self, new_position):
+    def update_player_positions(self, new_position) -> None:
         """Update player position and actualize the winner
         :param new_position: [i,j,-1]
         :param player_number: int
@@ -76,10 +75,10 @@ class BoardState:
             self.winner = self.next_player
         self.played_coup += 1
 
-    def add_new_wall(self, new_position):
+    def add_new_wall(self, new_position) -> None:
         """Add wall by modifying wall possibilities,
         update free_paths,
-        update player remaining walls number
+        update player remaining walls number.
 
         :param new_position: [i,j,0] or [i,j,1]
         :param player_number: int
@@ -114,10 +113,10 @@ class BoardState:
             self.free_paths.pop((k + 11, k + 1))
         self.played_coup += 1
 
-    def remove_wall(self, new_position):
+    def remove_wall(self, new_position) -> None:
         """Add one wall in remaining player walls,
         update wall possibilities,
-        update free_paths
+        update free_paths.
 
         :param new_position:
         :param player_number:

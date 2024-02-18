@@ -8,7 +8,7 @@ def score_with_relative_path_length_dif(bs: BoardState) -> float:
     """Calculate the actual relative path length difference between players
     :param player_number: the player for who the reward is calculated
     :return: if one way is blocked -1000, if player won inf, otherwise (
-    l2-l1)/l1
+    l2-l1)/l1.
     """
     dist_graph = sp.csgraph.shortest_path(
         bs.free_paths.tocsr(), unweighted=True, directed=False,
@@ -22,7 +22,7 @@ def score_with_relative_path_length_dif(bs: BoardState) -> float:
             for i_ in range(9)
         ],
     )
-    if (l1 == np.inf) or (l2 == np.inf):
+    if np.inf in (l1, l2):
         return -1000
 
     return (l2 - l1) / (l1 + 1)
