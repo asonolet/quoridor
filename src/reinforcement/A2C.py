@@ -1,10 +1,13 @@
+import logging
+
 import numpy as np
 import tensorflow as tf
 import tensorflow.keras.layers as kl
 import tensorflow.keras.losses as kls
 import tensorflow.keras.optimizers as ko
-import logging
+
 from quoridor.graphic_quoridor import Plotter
+from quoridor.scorer import score_with_relative_path_length_dif
 
 
 class ActionSpace:
@@ -47,7 +50,7 @@ class Env:
                 plotter.play(self.g, 1, coup_adv)
             self.g.coup(coup_adv, 1)
             reward = (
-                self.g.board_state.score_with_relative_path_length_dif(0)
+                score_with_relative_path_length_dif(self.g.board_state, 0)
                 - self.previous_reward
             )
             self.previous_reward = reward
