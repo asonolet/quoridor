@@ -18,5 +18,5 @@ dev = ["pytest"]
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["ANN101", "ANN102", "ERA001", "T201", "COM812", "ISC001"]
-exclude = ["tests"]
+ignore = ["ANN101", "ANN102", "ERA001", "T201", "COM812", "ISC001", "D203", "D213", "S101"]
+exclude = ["tests/*", "src/reinforcement/*", "app/*"]

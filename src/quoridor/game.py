@@ -28,7 +28,7 @@ class Game:
             + self.all_walls_choices[:, 2]
         )
 
-    def coup(self, choice=None, get_back: bool =False, score_: bool =True):
+    def coup(self, choice=None, get_back: bool = False, score_: bool = True):
         """Make a move.
 
         Update board_state

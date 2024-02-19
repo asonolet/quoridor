@@ -62,13 +62,17 @@ class DDDQNNet:
             # tuple hence is like if we wrote
             # [None, 100, 120, 4]
             self.inputs_ = tf.placeholder(
-                tf.float32, [None, *state_size], name="inputs",
+                tf.float32,
+                [None, *state_size],
+                name="inputs",
             )
 
             self.ISWeights_ = tf.placeholder(tf.float32, [None, 1], name="IS_weights")
 
             self.actions_ = tf.placeholder(
-                tf.float32, [None, action_size], name="actions_",
+                tf.float32,
+                [None, action_size],
+                name="actions_",
             )
 
             # Remember that target_Q is the R(s,a) + ymax Qhat(s', a')
@@ -158,7 +162,8 @@ class DDDQNNet:
             # Agregating layer
             # Q(s,a) = V(s) + (A(s,a) - 1/|A| * sum A(s,a'))
             self.output = self.value + tf.subtract(
-                self.advantage, tf.reduce_mean(self.advantage, axis=1, keepdims=True),
+                self.advantage,
+                tf.reduce_mean(self.advantage, axis=1, keepdims=True),
             )
 
             # Q is our predicted Q value.
@@ -522,7 +527,12 @@ With ϵ select a random action atat, otherwise select at=argmaxaQ(st,a)
 
 
 def predict_action(
-    explore_start, explore_stop, decay_rate, decay_step, state, possible_actions,
+    explore_start,
+    explore_stop,
+    decay_rate,
+    decay_step,
+    state,
+    possible_actions,
 ):
     # EPSILON GREEDY STRATEGY
     # Choose action a from state s using epsilon greedy.
@@ -656,7 +666,9 @@ if training:
                     # the episode ends so no next state
                     next_state = np.zeros((120, 140), dtype=int)
                     next_state, stacked_frames = stack_frames(
-                        stacked_frames, next_state, False,
+                        stacked_frames,
+                        next_state,
+                        False,
                     )
 
                     # Set step = max_steps to end the episode
@@ -682,7 +694,9 @@ if training:
 
                     # Stack the frame of the next_state
                     next_state, stacked_frames = stack_frames(
-                        stacked_frames, next_state, False,
+                        stacked_frames,
+                        next_state,
+                        False,
                     )
 
                     # Add experience to memory
@@ -717,7 +731,8 @@ if training:
 
                 # Get Q values for next_state
                 q_next_state = sess.run(
-                    DQNetwork.output, feed_dict={DQNetwork.inputs_: next_states_mb},
+                    DQNetwork.output,
+                    feed_dict={DQNetwork.inputs_: next_states_mb},
                 )
 
                 # Calculate Qtarget for all actions that state

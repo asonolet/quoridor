@@ -188,7 +188,9 @@ class Model(tf.keras.Model):
         move_choice = self.move_choice(hidden)
         # move_choice_allowed = np.where(poss, move_choice, np.inf)
         move_choice_allowed = tf.where(
-            poss > 0.0, move_choice, -np.inf * tf.ones_like(move_choice),
+            poss > 0.0,
+            move_choice,
+            -np.inf * tf.ones_like(move_choice),
         )
         return move_choice_allowed, self.value(hidden), move_choice, hidden
         # self.logits(hidden),
@@ -208,7 +210,13 @@ class Model(tf.keras.Model):
 
 class A2CAgent:
     def __init__(
-        self, model, lr=7e-4, gamma=0.2, value_c=0.5, entropy_c=1e-4, reprise=False,
+        self,
+        model,
+        lr=7e-4,
+        gamma=0.2,
+        value_c=0.5,
+        entropy_c=1e-4,
+        reprise=False,
     ) -> None:
         # `gamma` is the discount factor
         self.gamma = gamma

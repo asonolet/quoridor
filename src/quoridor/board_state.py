@@ -5,6 +5,7 @@ from scipy import sparse as sp
 
 BOARD_SIZE = 9
 
+
 class Player:
     """Player data holder."""
 
@@ -51,7 +52,7 @@ class BoardState:
     """
 
     def __init__(self, first_player: int = 0) -> None:
-        """Initializes the board state as the begining of a game.
+        """Initialize the board state as the begining of a game.
 
         :param first_player: the first player to play. Player 0 start
         from bottom and player 1 at top (j=8).
@@ -119,15 +120,15 @@ class BoardState:
 
         # removing blocked path from free_paths
         if new_position[2] == 0:
-            self.free_paths.pop((k, k + 1))
-            self.free_paths.pop((k + 1, k))
-            self.free_paths.pop((k + 10, k + 11))
-            self.free_paths.pop((k + 11, k + 10))
+            self.free_paths[k, k + 1] = False
+            self.free_paths[k + 1, k] = False
+            self.free_paths[k + 10, k + 11] = False
+            self.free_paths[k + 11, k + 10] = False
         if new_position[2] == 1:
-            self.free_paths.pop((k, k + 10))
-            self.free_paths.pop((k + 10, k))
-            self.free_paths.pop((k + 1, k + 11))
-            self.free_paths.pop((k + 11, k + 1))
+            self.free_paths.pop[k, k + 10] = False
+            self.free_paths.pop[k + 10, k] = False
+            self.free_paths.pop[k + 1, k + 11] = False
+            self.free_paths.pop[k + 11, k + 1] = False
         self.played_coup += 1
 
     def remove_wall(self, new_position: tuple[int]) -> None:

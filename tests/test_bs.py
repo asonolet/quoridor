@@ -1,20 +1,22 @@
 from quoridor import board_state as bs
 
 
-def test_bs_players_init():
+def test_bs_players_init() -> None:
     board = bs.BoardState()
     assert len(board.players) == 2
-    assert board.players[0].position == (0, 5, -1)
-    assert board.players[1].position == (8, 5, -1)
+    assert board.players[0].position == (4, 0)
+    assert board.players[1].position == (4, 8)
 
-def test_next_player_changes():
+
+def test_next_player_changes() -> None:
     board = bs.BoardState()
     first_player = board.next_player
-    board.update_player_positions((1, 5, -1))
+    board.update_player_positions((4, 1, -1))
     assert (first_player + board.next_player) % 2 == 1
-    board.update_player_positions((7, 5, -1))
+    board.update_player_positions((4, 7, -1))
     assert (first_player + board.next_player) % 2 == 0
-    board.add_new_wall((6, 5, 0))
+    print(board.free_paths.keys())
+    board.add_new_wall((3, 6, 0))
     assert (first_player + board.next_player) % 2 == 1
-    board.remove_wall((6,5,0))
+    board.remove_wall((3, 6, 0))
     assert (first_player + board.next_player) % 2 == 0
