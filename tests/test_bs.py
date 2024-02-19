@@ -24,6 +24,6 @@ def test_next_player_changes() -> None:
 def test_add_remove_wall() -> None:
     board = bs.BoardState()
     board.add_new_wall((4, 1, 0))
-    assert board.free_paths[41, 42] is False
+    assert not board.free_paths[41, 42]
     board.remove_wall((4, 1, 0))
-    assert board.free_paths[41, 42] is True
+    assert board.free_paths[41, 42]

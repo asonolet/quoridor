@@ -12,10 +12,10 @@ if __name__ == "__main__":
     while game.board_state.winner == -1:
         a = np.random.uniform(0, 1)
         if i % 2 == 0:
-            coup = po.play_greedy(game, i % 2)
+            coup = po.play_greedy(game)
         else:
             coup = po.play_with_proba(game, i % 2)
-        score = game.coup(coup, i % 2, False, True)
+        score = game.coup(coup, False, True)
         print("Player %1d " % (i % 2), coup, score)
         i = i + 1
     print("And the winner is ... Player %.1d" % game.board_state.winner)
