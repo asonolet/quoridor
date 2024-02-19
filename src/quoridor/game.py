@@ -5,9 +5,13 @@ from quoridor.scorer import score_with_relative_path_length_dif
 
 
 class Game:
-    """This object contains anything a game needs to be played."""
+    """Game object contains anything a game needs to be played."""
 
-    def __init__(self, game_name) -> None:
+    def __init__(self, game_name: str) -> None:
+        """Initialise a game.
+
+        :param game_name: The name of the game.
+        """
         self.game_name = game_name
         self.board_state = BoardState()
 
@@ -24,10 +28,13 @@ class Game:
             + self.all_walls_choices[:, 2]
         )
 
-    def coup(self, choice=None, get_back=False, score_=True):
-        """Update board_state
+    def coup(self, choice=None, get_back: bool =False, score_: bool =True):
+        """Make a move.
+
+        Update board_state
         if score return relative diff length between paths
-        if get back is True, don't change the board state
+        if get back is True, don't change the board state.
+
         :param choice:
         :param player_number: int
         :param get_back: bool

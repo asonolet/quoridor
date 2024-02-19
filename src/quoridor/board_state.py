@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 from scipy import sparse as sp
 
+BOARD_SIZE = 9
 
 class Player:
     """Player data holder."""
@@ -23,6 +24,7 @@ class Player:
 
     @property
     def k_pos(self) -> int:
+        """Transforms the position to a signle int."""
         return 10 * self.position[0] + self.position[1]
 
 
