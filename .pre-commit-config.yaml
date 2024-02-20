@@ -1,0 +1,34 @@
+repos:
+  # Add some general purpose useful hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      # Make sure that contained YAML files are well-formed
+      - id: check-yaml
+      # Trim trailing whitespace of all sorts
+      - id: trailing-whitespace
+      # Apply a file size limit of 500kB
+      - id: check-added-large-files
+      # Simple parser validation of e.g. pyproject.toml
+      - id: check-toml
+      # Unify file endings
+      - id: end-of-file-fixer
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.1.9
+    hooks:
+      # Run the linter.
+      - id: ruff
+        args: [ --fix ]
+      # Run the formatter.
+      - id: ruff-format
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: 'v1.8.0'  # Use the sha / tag you want to point at
+    hooks:
+      - id: mypy
+        exclude: |
+            (?x)^(
+                tests/.*|
+                app/.*|
+                data/.*
+            )$

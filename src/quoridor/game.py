@@ -30,7 +30,7 @@ class Game:
             + self.all_walls_choices[:, 2]
         )
 
-    def play(self, choice: tuple(int)) -> None:
+    def play(self, choice: tuple[int, int, int]) -> None:
         """Make a move.
 
         Update board_state
@@ -45,11 +45,11 @@ class Game:
         """
         self.coup_joues.append(choice)
         if choice[2] == -1:
-            self.board_state.update_player_positions(choice[:2])
+            self.board_state.update_player_positions(choice)
         else:
             self.board_state.add_new_wall(choice)
 
-    def evaluate(self, choice: tuple(int)):
+    def evaluate(self, choice: tuple[int, int, int]):
         self.play(choice)
         score = self.score()
         self.get_back()

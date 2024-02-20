@@ -9,6 +9,10 @@ BOARD_SIZE = 9
 class Player:
     """Player data holder."""
 
+    name: int
+    n_tuiles: int
+    position: tuple[int, int]
+
     def __init__(self, player_number: int) -> None:
         """Player class initialisation.
 
@@ -76,7 +80,7 @@ class BoardState:
     def player(self) -> Player:
         return self.players[self.next_player]
 
-    def update_player_positions(self, new_position: tuple[int]) -> None:
+    def update_player_positions(self, new_position: tuple[int, int, int]) -> None:
         """Update player position and actualize the winner.
 
         :param new_position: [i,j,-1]
@@ -87,10 +91,10 @@ class BoardState:
             not self.next_player and new_position[1] == 8
         ):
             self.winner = self.next_player
-        self.player.position = tuple(new_position[:2])
+        self.player.position = new_position[:2]
         self.played_coup += 1
 
-    def add_new_wall(self, new_position: tuple[int]) -> None:
+    def add_new_wall(self, new_position: tuple[int, int, int]) -> None:
         """Add wall.
 
         Modify wall possibilities,
@@ -130,7 +134,7 @@ class BoardState:
             self.free_paths[k + 11, k + 1] = False
         self.played_coup += 1
 
-    def remove_wall(self, new_position: tuple[int]) -> None:
+    def remove_wall(self, new_position: tuple[int, int, int]) -> None:
         """Undo an add wall operation.
 
         Add one wall in remaining player walls,
