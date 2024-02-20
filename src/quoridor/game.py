@@ -77,7 +77,9 @@ class Game:
 
     def _all_moves(self):
         all_moves = []
-        for _, k in self.board_state.free_paths[self.board_state.player.k_pos, :].keys():  # noqa:SIM118
+        for _, k in self.board_state.free_paths[  # noqa:SIM118
+            self.board_state.player.k_pos, :
+        ].keys():
             new_coup = (k // 10, k % 10, -1)
             new_position = new_coup[:2]
             # In this case, both players are next one another

@@ -17,7 +17,13 @@ if __name__ == "__main__":
 
         coup = po.play_greedy(game) if i % 2 == 0 else po.play_with_proba(game)
         score = game.coup(coup, False, True)
-        print("Player %1d " % (i % 2), coup, score, "position", bs.players[bs.last_player].position)
+        print(
+            "Player %1d " % (i % 2),
+            coup,
+            score,
+            "position",
+            bs.players[bs.last_player].position,
+        )
         i = i + 1
     print("And the winner is ... Player %.1d" % bs.winner)
     fin = time.time()
