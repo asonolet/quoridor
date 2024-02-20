@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 
 from quoridor.board_state import BoardState
@@ -28,7 +30,7 @@ class Game:
             + self.all_walls_choices[:, 2]
         )
 
-    def coup(self, choice=None, get_back: bool = False, score_: bool = True):
+    def play(self, choice: tuple(int)) -> None:
         """Make a move.
 
         Update board_state
@@ -46,18 +48,17 @@ class Game:
             self.board_state.update_player_positions(choice[:2])
         else:
             self.board_state.add_new_wall(choice)
-        if score_:
-            dist = score_with_relative_path_length_dif(self.board_state)
-            if get_back:
-                self.get_back(1)
-            return dist
 
-        if get_back:
-            self.get_back(1)
-            return None
-        return None
+    def evaluate(self, choice: tuple(int)):
+        self.play(choice)
+        score = self.score()
+        self.get_back()
+        return score
 
-    def get_back(self, n) -> None:
+    def score(self):
+        return score_with_relative_path_length_dif(self.board_state)
+
+    def get_back(self, n: int = 1) -> None:
         for i_ in range(n):
             choice = self.coup_joues.pop()
 
@@ -100,12 +101,20 @@ class Game:
                 all_moves.append(new_coup)
         return all_moves
 
-    def all_coups(self):
+    def _all_walls(self):
+        return np.transpose(
+            np.nonzero(self.board_state.wall_possibilities > 0),
+        )
+
+    def all_possibilities(self):
+        """Return current possibilities.
+
+        List of possible moves and possible wall placements. Does not
+        take into account the rule about not enclosing someone.
+        """
         all_moves = self._all_moves()
         if self.board_state.player.n_tuiles > 0:
-            all_walls = np.transpose(
-                np.nonzero(self.board_state.wall_possibilities > 0),
-            )
+            all_walls = self._all_walls()
             all_coups = np.concatenate((all_moves, all_walls))
         else:
             all_coups = np.array(all_moves)
@@ -127,9 +136,9 @@ class Game:
         return is_move_allowed
 
     def evaluate_all_choices(self):
-        """For a given board_state, test all possibilities and returns a vector
-        where the place of the score always match the same choice. If the
-        choice is not available, score is 0
+        """Score all choices, returns a vector with consistent order.
+
+        If the choice is not available, score is 0
         :return: score vector of length 8*8*2 + 4.
         """
         # d'abord pour les murs, je veux la liste des indices qui
@@ -148,7 +157,7 @@ class Game:
             indices = np.nonzero(isin)
             scores = -1000 * np.ones(len(isin))
             scores[indices] = np.apply_along_axis(
-                lambda x: self.coup(x, get_back=True),
+                lambda x: self.evaluate(x),
                 1,
                 all_walls_available,
             )
@@ -161,28 +170,30 @@ class Game:
         pos = self.board_state.player.position
         for move in all_moves:
             if (move[0] == pos[0]) & (move[1] > pos[1]):
-                moves_scores[0] = self.coup(move, get_back=True)
+                moves_scores[0] = self.evaluate(move)
             if (move[0] == pos[0]) & (move[1] < pos[1]):
-                moves_scores[1] = self.coup(move, get_back=True)
+                moves_scores[1] = self.evaluate(move)
             if (move[1] == pos[1]) & (move[0] < pos[0]):
-                moves_scores[2] = self.coup(move, get_back=True)
+                moves_scores[2] = self.evaluate(move)
             if (move[1] == pos[1]) & (move[0] > pos[0]):
-                moves_scores[3] = self.coup(move, get_back=True)
+                moves_scores[3] = self.evaluate(move)
         scores = np.r_[scores, moves_scores]
         scores[scores != -1000] -= np.mean(scores[scores != -1000])
         return scores
 
     def evaluate_all_possibilities(self):
-        """For a given board state, test all possibilities,
-        score them for player i
-        sort them in ascending order
+        """For a given board state, test all possibilities.
+
+        Score them for player i
+        Sort them in ascending order
+
         :param player_number: int
         :return: best possibilities, cost (increasing).
         """
-        all_coups = self.all_coups()
+        all_coups = self.all_possibilities()
         # attention de temps en temps all_coups est de dimension 1 et ça plante
         all_scores = np.apply_along_axis(
-            lambda x: self.coup(x, get_back=True),
+            lambda x: self.evaluate(x),
             1,
             all_coups,
         )

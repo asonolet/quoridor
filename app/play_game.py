@@ -16,7 +16,8 @@ if __name__ == "__main__":
         a = np.random.uniform(0, 1)
 
         coup = po.play_greedy(game) if i % 2 == 0 else po.play_with_proba(game)
-        score = game.coup(coup, False, True)
+        game.play(coup)
+        score = game.score()
         print(
             "Player %1d " % (i % 2),
             coup,
