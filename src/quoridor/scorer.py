@@ -14,13 +14,14 @@ def score_with_relative_path_length_dif(bs: BoardState) -> float:
         bs.free_paths.tocsr(),
         unweighted=True,
         directed=False,
+        indices=[bs.player.k_pos, bs.players[bs.last_player].k_pos]
     )  # type: ndarray
     l1 = np.min(
-        [dist_graph[bs.player.k_pos, 8 * bs.last_player + 10 * i_] for i_ in range(9)],
+        [dist_graph[0, 8 * bs.last_player + 10 * i_] for i_ in range(9)],
     )
     l2 = np.min(
         [
-            dist_graph[bs.players[bs.last_player].k_pos, 8 * bs.next_player + 10 * i_]
+            dist_graph[1, 8 * bs.next_player + 10 * i_]
             for i_ in range(9)
         ],
     )

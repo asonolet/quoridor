@@ -6,19 +6,20 @@ from quoridor.game import Game
 
 if __name__ == "__main__":
     game = Game("partie 1")
+    bs = game.board_state
+    print("Player 0 pos, ", bs.player.position)
+    print("Player 1 pos, ", bs.players[bs.last_player].position)
     debut = time.time()
     i = 0
     # print(game.evaluate_all_possibilities(0))
-    while game.board_state.winner == -1:
+    while bs.winner == -1:
         a = np.random.uniform(0, 1)
-        if i % 2 == 0:
-            coup = po.play_greedy(game)
-        else:
-            coup = po.play_with_proba(game, i % 2)
+
+        coup = po.play_greedy(game) if i % 2 == 0 else po.play_with_proba(game)
         score = game.coup(coup, False, True)
-        print("Player %1d " % (i % 2), coup, score)
+        print("Player %1d " % (i % 2), coup, score, "position", bs.players[bs.last_player].position)
         i = i + 1
-    print("And the winner is ... Player %.1d" % game.board_state.winner)
+    print("And the winner is ... Player %.1d" % bs.winner)
     fin = time.time()
     temps = fin - debut
     print("Temps moyen par coup : ", temps / i)

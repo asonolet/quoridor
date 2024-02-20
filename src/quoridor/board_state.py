@@ -83,12 +83,11 @@ class BoardState:
         :param player_number: int
         :return:
         """
-        self.player.position = tuple(new_position[:2])
-
         if (self.next_player and new_position[1] == 0) or (
             not self.next_player and new_position[1] == 8
         ):
             self.winner = self.next_player
+        self.player.position = tuple(new_position[:2])
         self.played_coup += 1
 
     def add_new_wall(self, new_position: tuple[int]) -> None:
@@ -125,10 +124,10 @@ class BoardState:
             self.free_paths[k + 10, k + 11] = False
             self.free_paths[k + 11, k + 10] = False
         if new_position[2] == 1:
-            self.free_paths.pop[k, k + 10] = False
-            self.free_paths.pop[k + 10, k] = False
-            self.free_paths.pop[k + 1, k + 11] = False
-            self.free_paths.pop[k + 11, k + 1] = False
+            self.free_paths[k, k + 10] = False
+            self.free_paths[k + 10, k] = False
+            self.free_paths[k + 1, k + 11] = False
+            self.free_paths[k + 11, k + 1] = False
         self.played_coup += 1
 
     def remove_wall(self, new_position: tuple[int]) -> None:
