@@ -1,3 +1,5 @@
+"""Board state module."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -25,7 +27,7 @@ class Player:
         if player_number == 0:
             self.position = (4, 0)
         else:
-            self.position = (4, 8)
+            self.position = (4, BOARD_SIZE - 1)
 
     @property
     def k_pos(self) -> int:
@@ -35,13 +37,13 @@ class Player:
 
 def _init_free_paths() -> sp.dok_matrix:
     node_links = np.zeros((89, 89), dtype=bool)
-    for x in range(9):
-        for y in range(9):
-            if y < 8:
+    for x in range(BOARD_SIZE):
+        for y in range(BOARD_SIZE):
+            if y < BOARD_SIZE - 1:
                 node_links[10 * x + y, 10 * x + y + 1] = 1
             if y > 0:
                 node_links[10 * x + y, 10 * x + y - 1] = 1
-            if x < 8:
+            if x < BOARD_SIZE - 1:
                 node_links[10 * x + y, 10 * (x + 1) + y] = 1
             if x > 0:
                 node_links[10 * x + y, 10 * (x - 1) + y] = 1
@@ -59,9 +61,9 @@ class BoardState:
         """Initialize the board state as the begining of a game.
 
         :param first_player: the first player to play. Player 0 start
-        from bottom and player 1 at top (j=8).
+        from bottom and player 1 at top (j=BOARD_SIZE - 1).
         """
-        self.wall_possibilities = np.ones((8, 8, 2))
+        self.wall_possibilities = np.ones((BOARD_SIZE - 1, BOARD_SIZE - 1, 2))
         self.players = [Player(0), Player(1)]
         self.played_coup = 0
         self._first_player = first_player
@@ -69,16 +71,24 @@ class BoardState:
         self.winner = -1
 
     @property
-    def next_player(self) -> int:
+    def next_player_nb(self) -> int:
+        """The id of the player currently playing."""
         return (self._first_player + self.played_coup) % 2
 
     @property
-    def last_player(self) -> int:
+    def last_player_nb(self) -> int:
+        """The id of the player which just played."""
         return (self._first_player + self.played_coup + 1) % 2
 
     @property
     def player(self) -> Player:
-        return self.players[self.next_player]
+        """Current player."""
+        return self.players[self.next_player_nb]
+
+    @property
+    def last_player(self) -> Player:
+        """The player who just played."""
+        return self.players[self.last_player_nb]
 
     def update_player_positions(self, new_position: tuple[int, int, int]) -> None:
         """Update player position and actualize the winner.
@@ -87,12 +97,22 @@ class BoardState:
         :param player_number: int
         :return:
         """
-        if (self.next_player and new_position[1] == 0) or (
-            not self.next_player and new_position[1] == 8
+        if (self.next_player_nb and new_position[1] == 0) or (
+            not self.next_player_nb and new_position[1] == BOARD_SIZE - 1
         ):
-            self.winner = self.next_player
-        self.player.position = new_position[:2]
+            self.winner = self.next_player_nb
+        self.player.position = (new_position[0], new_position[1])
         self.played_coup += 1
+
+    def reset_player_position(self, last_pos: tuple[int, int, int]) -> None:
+        """Reset player position to last position.
+
+        :param new_position: [i,j,-1]
+        :param player_number: int
+        :return:
+        """
+        self.last_player.position = (last_pos[0], last_pos[1])
+        self.played_coup -= 1
 
     def add_new_wall(self, new_position: tuple[int, int, int]) -> None:
         """Add wall.
@@ -111,12 +131,12 @@ class BoardState:
         self.wall_possibilities[x, y, 0] -= 1
         self.wall_possibilities[x, y, 1] -= 1
         if new_position[2] == 0:
-            if x < 7:
+            if x < BOARD_SIZE - 2:
                 self.wall_possibilities[x + 1, y, 0] -= 1
             if x > 0:
                 self.wall_possibilities[x - 1, y, 0] -= 1
         if new_position[2] == 1:
-            if y < 7:
+            if y < BOARD_SIZE - 2:
                 self.wall_possibilities[x, y + 1, 1] -= 1
             if y > 0:
                 self.wall_possibilities[x, y - 1, 1] -= 1
@@ -152,7 +172,7 @@ class BoardState:
         self.wall_possibilities[x, y, 1] = min(1, self.wall_possibilities[x, y, 1] + 1)
 
         if new_position[2] == 0:
-            if x < 7:
+            if x < BOARD_SIZE - 2:
                 self.wall_possibilities[x + 1, y, 0] = min(
                     1,
                     self.wall_possibilities[x + 1, y, 0] + 1,
@@ -164,7 +184,7 @@ class BoardState:
                 )
 
         if new_position[2] == 1:
-            if y < 7:
+            if y < BOARD_SIZE - 2:
                 self.wall_possibilities[x, y + 1, 1] = min(
                     1,
                     self.wall_possibilities[x, y + 1, 1] + 1,
@@ -189,10 +209,11 @@ class BoardState:
         self.played_coup -= 1
 
     def to_universal_state(self, i_):
+        """Supposed to be a universal representation."""
         return np.r_[
             np.ravel(self.wall_possibilities),
-            np.array(self.players[i_ % 2].position) / 8,
-            np.array(self.players[(i_ + 1) % 2].position) / 8,
+            np.array(self.players[i_ % 2].position) / (BOARD_SIZE - 1),
+            np.array(self.players[(i_ + 1) % 2].position) / (BOARD_SIZE - 1),
             self.players[i_ % 2].n_tuiles / 10,
             self.players[(i_ + 1) % 2].n_tuiles / 10,
         ]

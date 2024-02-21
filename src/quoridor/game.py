@@ -1,9 +1,13 @@
+"""Game module."""
+
 from __future__ import annotations
 
 import numpy as np
 
-from quoridor.board_state import BoardState
+from quoridor.board_state import BOARD_SIZE, BoardState
 from quoridor.scorer import score_with_relative_path_length_dif
+
+SCORE_MIN = -1000
 
 
 class Game:
@@ -19,7 +23,7 @@ class Game:
 
         self.coup_joues = []
         self.coup_joues.append((4, 0, -1))
-        self.coup_joues.append((4, 8, -1))
+        self.coup_joues.append((4, BOARD_SIZE - 1, -1))
 
         self.all_walls_choices = np.transpose(
             np.nonzero(self.board_state.wall_possibilities > 0),
@@ -50,29 +54,32 @@ class Game:
             self.board_state.add_new_wall(choice)
 
     def evaluate(self, choice: tuple[int, int, int]):
+        """Coup is played, scired and unplayed."""
         self.play(choice)
         score = self.score()
         self.get_back()
         return score
 
     def score(self):
+        """Score for last player."""
         return score_with_relative_path_length_dif(self.board_state)
 
     def get_back(self, n: int = 1) -> None:
-        for i_ in range(n):
+        """Reset game to n coup before."""
+        for _ in range(n):
             choice = self.coup_joues.pop()
 
-            if (len(choice) == 2) or (choice[2] == -1):
-                pos = self.last_pos
-                self.board_state.update_player_positions(pos)
+            if choice[2] == -1:
+                pos = self._last_pos
+                self.board_state.reset_player_position(pos)
                 self.board_state.winner = -1
-            elif len(choice) == 3:
+            else:
                 self.board_state.remove_wall(choice)
 
     @property
-    def last_pos(self):
+    def _last_pos(self):
         for i_ in range(len(self.coup_joues) - 2, -1, -2):
-            if len(self.coup_joues[i_]) == 2 or self.coup_joues[i_][2] == -1:
+            if self.coup_joues[i_][2] == -1:
                 return self.coup_joues[i_]
         return None
 
@@ -84,19 +91,19 @@ class Game:
             new_coup = (k // 10, k % 10, -1)
             new_position = new_coup[:2]
             # In this case, both players are next one another
-            if (
-                new_position
-                == self.board_state.players[self.board_state.last_player].position
-            ):
+            if new_position == self.board_state.last_player.position:
                 old_pos = np.array(self.board_state.player.position)
                 new_position = np.array(new_position)
                 new_coup = tuple(np.r_[2 * new_position - old_pos, -1])
-                if (0 < new_coup[0] < 9) & (0 < new_coup[1] < 9):
-                    if self.board_state.free_paths[
+                if (
+                    (0 < new_coup[0] < BOARD_SIZE)
+                    & (0 < new_coup[1] < BOARD_SIZE)
+                    & self.board_state.free_paths[
                         10 * new_coup[0] + new_coup[1],
                         new_position[0] * 10 + new_position[1],
-                    ]:
-                        all_moves.append(new_coup)
+                    ]
+                ):
+                    all_moves.append(new_coup)
             else:
                 all_moves.append(new_coup)
         return all_moves
@@ -120,7 +127,7 @@ class Game:
             all_coups = np.array(all_moves)
         return all_coups
 
-    def moves_allowed(self):
+    def _moves_allowed(self):
         all_moves = self._all_moves()
         pos = self.board_state.player.position
         is_move_allowed = np.zeros((4,))
@@ -155,17 +162,17 @@ class Game:
             )
             isin = np.isin(self.set, test_set, assume_unique=True)
             indices = np.nonzero(isin)
-            scores = -1000 * np.ones(len(isin))
+            scores = SCORE_MIN * np.ones(len(isin))
             scores[indices] = np.apply_along_axis(
                 lambda x: self.evaluate(x),
                 1,
                 all_walls_available,
             )
         else:
-            scores = -1000 * np.ones(len(self.set))
+            scores = SCORE_MIN * np.ones(len(self.set))
 
         # reste a faire les 4 mouvements possibles, +/-/gauche/droite
-        moves_scores = [-1000.0] * 4
+        moves_scores = [SCORE_MIN] * 4
         all_moves = self._all_moves()
         pos = self.board_state.player.position
         for move in all_moves:
@@ -178,7 +185,7 @@ class Game:
             if (move[1] == pos[1]) & (move[0] > pos[0]):
                 moves_scores[3] = self.evaluate(move)
         scores = np.r_[scores, moves_scores]
-        scores[scores != -1000] -= np.mean(scores[scores != -1000])
+        scores[scores != SCORE_MIN] -= np.mean(scores[scores != SCORE_MIN])
         return scores
 
     def evaluate_all_possibilities(self):

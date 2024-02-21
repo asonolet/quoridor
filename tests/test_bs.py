@@ -16,15 +16,15 @@ def test_bs_players_init() -> None:
 def test_next_player_changes() -> None:
     """next_player switches when position is updated, a wall is played or removed."""
     board = bs.BoardState()
-    first_player = board.next_player
+    first_player = board.next_player_nb
     board.update_player_positions((4, 1, -1))
-    assert (first_player + board.next_player) % 2 == 1
+    assert (first_player + board.next_player_nb) % 2 == 1
     board.update_player_positions((4, 7, -1))
-    assert (first_player + board.next_player) % 2 == 0
+    assert (first_player + board.next_player_nb) % 2 == 0
     board.add_new_wall((3, 6, 0))
-    assert (first_player + board.next_player) % 2 == 1
+    assert (first_player + board.next_player_nb) % 2 == 1
     board.remove_wall((3, 6, 0))
-    assert (first_player + board.next_player) % 2 == 0
+    assert (first_player + board.next_player_nb) % 2 == 0
 
 
 def test_add_remove_wall() -> None:

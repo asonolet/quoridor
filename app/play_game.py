@@ -8,7 +8,7 @@ if __name__ == "__main__":
     game = Game("partie 1")
     bs = game.board_state
     print("Player 0 pos, ", bs.player.position)
-    print("Player 1 pos, ", bs.players[bs.last_player].position)
+    print("Player 1 pos, ", bs.players[bs.last_player_nb].position)
     debut = time.time()
     i = 0
     # print(game.evaluate_all_possibilities(0))
@@ -23,7 +23,7 @@ if __name__ == "__main__":
             coup,
             score,
             "position",
-            bs.players[bs.last_player].position,
+            bs.players[bs.last_player_nb].position,
         )
         i = i + 1
     print("And the winner is ... Player %.1d" % bs.winner)
