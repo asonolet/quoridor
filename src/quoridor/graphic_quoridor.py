@@ -1,15 +1,23 @@
-"""This module allaws to plot a game in order to better understanding how is the agent learning."""
+"""Plotters.
 
-from typing import NoReturn
+This module allows to plot a game in order to better understanding how
+is the agent learning.
+"""
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
 class Plotter:
-    """The ``Plotter`` object is used to plot a game. It can only work if it plots the game from the begining, it doesn't have yet any feature to plot a game from any state it is in."""
+    """Graphic plotter.
+
+    The ``Plotter`` object is used to plot a game. It can only work
+    if it plots the game from the begining, it doesn't have yet any
+    feature to plot a game from any state it is in.
+    """
 
     def __init__(self) -> None:
+        """Initialize matplotlib board."""
         plt.figure()
         columns = list(range(10))
         rows = list(range(10))
@@ -52,7 +60,7 @@ class Plotter:
             return
 
     def play(self, game, player_number, move) -> None:
-        """Used to update the plot of the game.
+        """Update the plot of the game.
 
         Args:
         ----
@@ -68,67 +76,10 @@ class Plotter:
         plt.pause(0.1)
 
     def load_board(self, universal_board) -> None:
-        """.. todo::
-        write a method to plot a game state from the ``universal_board_state`` variable given.
+        """Load a board not from the begining.
+
+        .. todo::
+           write a method to plot a game state from the
+           ``universal_board_state`` variable given.
         """
         return
-
-
-class TermPlotter:
-    """The ``TermPlotter`` object is used to plot a game on the terminal. It can only work if it plots the game from the begining, it doesn't have yet any feature to plot a game from any state it is in."""
-
-    wall_line = "+  " * 10 + "+"
-    pos_line = "| " + "  " * 9 + "|"
-
-    def __init__(self) -> None:
-        columns = list(range(10))
-        rows = list(range(10))
-        grid_x, grid_y = np.meshgrid(columns, rows)
-        for i in range(len(grid_x)):
-            plt.plot(grid_x[i], grid_y[i], "k", linewidth=1)
-            plt.plot(grid_y[i], grid_x[i], "k", linewidth=1)
-        plt.scatter([4.5], [0.5], c="r", s=80)
-        plt.scatter([4.5], [8.5], c="g", s=80)
-
-    def _add_wall(self, player_number, move) -> NoReturn:
-        raise NotImplementedError
-
-    def _move(self, game, player_number, move) -> None:
-        player_number = player_number % 2
-        color = "r" if player_number == 0 else "g"
-        a = plt.gca()
-        if move[2] == -1:
-            for i, point in enumerate(a.collections):
-                if np.all(
-                    point._offsets
-                    == np.array([game.board_state.player[player_number].position])
-                    + np.array([[0.5, 0.5]]),
-                ):
-                    a.collections.pop(i)
-            plt.pause(0.2)
-            plt.scatter([move[0] + 0.5], [move[1] + 0.5], c=color, s=80)
-
-        else:
-            return
-
-    def play(self, game, player_number, move) -> None:
-        """Used to update the plot of the game.
-
-        Args:
-        ----
-           game (Game): the game to read
-           player_number (int): the id of the player whose turn it is
-           move (tuple): the move played
-
-        """
-        if move[2] == -1:
-            self._move(game, player_number, move)
-        else:
-            self._add_wall(player_number, move)
-        plt.pause(0.1)
-
-    def load_board(self, universal_board) -> NoReturn:
-        """.. todo::
-        write a method to plot a game state from the ``universal_board_state`` variable given.
-        """
-        raise NotImplementedError

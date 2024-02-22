@@ -57,6 +57,8 @@ class BoardState:
     Methods to pass from one BoardState to an other are declared here.
     """
 
+    walls: set[tuple[int, int, int]]
+
     def __init__(self, first_player: int = 0) -> None:
         """Initialize the board state as the begining of a game.
 
@@ -69,6 +71,7 @@ class BoardState:
         self._first_player = first_player
         self.free_paths = _init_free_paths()
         self.winner = -1
+        self.walls = set()
 
     @property
     def next_player_nb(self) -> int:
@@ -121,11 +124,12 @@ class BoardState:
         update free_paths,
         update player remaining walls number.
 
-        :param new_position: [i,j,0] or [i,j,1]
+        :param new_position: (i,j,0) or (i,j,1)
         :param player_number: int
         :return:
         """
         self.player.n_tuiles -= 1
+        self.walls.add(new_position)
         x, y = new_position[0:2]
         k = 10 * x + y
         self.wall_possibilities[x, y, 0] -= 1
@@ -160,12 +164,16 @@ class BoardState:
         Add one wall in remaining player walls,
         update wall possibilities,
         update free_paths.
+        update walls.
+        If last int is 9, wall is horizontal, otherwise it is
+        vertical.
 
         :param new_position:
         :param player_number:
         :return:
         """
         self.player.n_tuiles += 1
+        self.walls.remove(new_position)
         x, y = new_position[0], new_position[1]
         k = 10 * x + y
         self.wall_possibilities[x, y, 0] = min(1, self.wall_possibilities[x, y, 0] + 1)

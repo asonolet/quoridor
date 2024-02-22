@@ -5,6 +5,8 @@ from scipy import sparse as sp
 
 from quoridor.board_state import BoardState
 
+SCORE_MIN = -1000
+
 
 def score_with_relative_path_length_dif(bs: BoardState) -> float:
     """Calculate a score.
@@ -29,6 +31,6 @@ def score_with_relative_path_length_dif(bs: BoardState) -> float:
         [dist_graph[1, 8 * bs.next_player_nb + 10 * i_] for i_ in range(9)],
     )
     if np.inf in (l1, l2):
-        return -1000
+        return SCORE_MIN
 
-    return (l2 - l1) / (l1 + 1)
+    return 2 * (l2 - l1) / (l1 + l2)

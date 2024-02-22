@@ -5,9 +5,7 @@ from __future__ import annotations
 import numpy as np
 
 from quoridor.board_state import BOARD_SIZE, BoardState
-from quoridor.scorer import score_with_relative_path_length_dif
-
-SCORE_MIN = -1000
+from quoridor.scorer import SCORE_MIN, score_with_relative_path_length_dif
 
 
 class Game:
