@@ -1,3 +1,5 @@
+"""Plotter in terminal."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -20,7 +22,7 @@ class TermPlotter:
     init_wall = "+---" * 9 + "+"
 
     def __init__(self) -> None:
-        pass
+        """Nothing to initialize."""
 
     def plot(self, bs: BoardState) -> None:
         """Plot a board state."""
