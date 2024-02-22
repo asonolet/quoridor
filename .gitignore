@@ -5,3 +5,4 @@ venv*
 *_old*
 *__pycache__*
 *.egg-info*
+*_build/*

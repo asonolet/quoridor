@@ -14,7 +14,7 @@ dependencies = [
 ml = ["tensorflow"]
 x = ["matplotlib"]
 all = ["tensorflow", "matplotlib"]
-dev = ["pytest"]
+dev = ["pytest", "sphinx"]
 
 [tool.ruff.lint]
 select = ["ALL"]
