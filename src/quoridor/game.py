@@ -162,7 +162,7 @@ class Game:
             indices = np.nonzero(isin)
             scores = SCORE_MIN * np.ones(len(isin))
             scores[indices] = np.apply_along_axis(
-                lambda x: self.evaluate(x),
+                lambda x: self.evaluate(tuple(x)),
                 1,
                 all_walls_available,
             )
@@ -198,7 +198,7 @@ class Game:
         all_coups = self.all_possibilities()
         # attention de temps en temps all_coups est de dimension 1 et ça plante
         all_scores = np.apply_along_axis(
-            lambda x: self.evaluate(x),
+            lambda x: self.evaluate(tuple(x)),
             1,
             all_coups,
         )
