@@ -10,6 +10,8 @@ Welcome to Quoridor's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   api/index_api.rst
+
 
 
 Indices and tables
