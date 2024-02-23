@@ -9,7 +9,8 @@ HIGHEST_SCORE = 1000
 
 def play_greedy(game):
     """Evaluate all possibilities and choose best one."""
-    return tuple(game.evaluate_all_possibilities()[0][-1])
+    choices, scores = game.evaluate_all_possibilities()
+    return tuple(choices[-1])
 
 
 def play_random(game):

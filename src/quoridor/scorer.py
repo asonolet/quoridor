@@ -14,7 +14,6 @@ def score_with_relative_path_length_dif(bs: BoardState) -> float:
     The score is the actual relative path length difference between
     players.
 
-    :param player_number: the player for who the reward is calculated
     :return: if one way is blocked -1000, if player won inf, otherwise (
     l2-l1)/l1.
     """
@@ -24,10 +23,10 @@ def score_with_relative_path_length_dif(bs: BoardState) -> float:
         directed=False,
         indices=[bs.player.k_pos, bs.last_player.k_pos],
     )  # type: np.ndarray
-    l1 = np.min(
+    l2 = np.min(
         [dist_graph[0, 8 * bs.last_player_nb + 10 * i_] for i_ in range(9)],
     )
-    l2 = np.min(
+    l1 = np.min(
         [dist_graph[1, 8 * bs.next_player_nb + 10 * i_] for i_ in range(9)],
     )
     if np.inf in (l1, l2):
