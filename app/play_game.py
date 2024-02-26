@@ -29,7 +29,7 @@ if __name__ == "__main__":
             bs.last_player.position,
         )
         pt.plot(bs)
-        time.sleep(0.25)
+        time.sleep(0.35)
         i = i + 1
     print("And the winner is ... Player %.1d" % bs.winner)
     fin = time.time()
