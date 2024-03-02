@@ -14,9 +14,9 @@ dependencies = [
 ml = ["tensorflow"]
 x = ["matplotlib"]
 all = ["tensorflow", "matplotlib"]
-dev = ["pytest", "sphinx"]
+dev = ["pytest", "sphinx", "pydata-sphinx-theme"]
 
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = ["ANN", "ANN101", "ANN102", "ERA001", "T201", "COM812", "ISC001", "D203", "D213", "S101"]
-exclude = ["doc/conf.py", "tests/*", "src/reinforcement/*", "app/*"]
+exclude = ["doc/conf.py", "tests/*", "src/reinforcement/*", "src/graphical/*", "app/*"]

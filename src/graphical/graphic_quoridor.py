@@ -48,7 +48,7 @@ class Plotter:
         if move[2] == -1:
             for i, point in enumerate(a.collections):
                 if np.all(
-                    point._offsets
+                    point._offsets  # noqa: SLF001
                     == np.array([game.board_state.player[player_number].position])
                     + np.array([[0.5, 0.5]]),
                 ):
@@ -75,11 +75,11 @@ class Plotter:
             self._add_wall(player_number, move)
         plt.pause(0.1)
 
-    def load_board(self, universal_board) -> None:
+    def load_board(self) -> None:
         """Load a board not from the begining.
 
         .. todo::
            write a method to plot a game state from the
            ``universal_board_state`` variable given.
         """
-        return
+        raise NotImplementedError
