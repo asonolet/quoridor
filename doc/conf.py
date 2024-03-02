@@ -27,7 +27,6 @@ extensions = [
 ]
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 language = "fr"
 
@@ -39,7 +38,7 @@ autosummary_generate = True
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "alabaster"
+html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 
 # List of patterns, relative to source directory, that match files and
@@ -55,6 +54,14 @@ exclude_patterns = [
     "src/reinforcement",
     "*graphic*",
 ]
+
+autodoc_default_options = {
+    "members": True,
+    "undoc-members": True,
+    "inherited-members": True,
+    "special-members": "__init__",
+}
+
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"

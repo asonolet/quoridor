@@ -63,7 +63,7 @@ class BoardState:
         """Initialize the board state as the begining of a game.
 
         :param first_player: the first player to play. Player 0 start
-        from bottom and player 1 at top (j=BOARD_SIZE - 1).
+           from bottom and player 1 at top (j=BOARD_SIZE - 1).
         """
         self.wall_possibilities = np.ones((BOARD_SIZE - 1, BOARD_SIZE - 1, 2))
         self.players = [Player(0), Player(1)]

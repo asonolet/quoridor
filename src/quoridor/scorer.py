@@ -15,7 +15,7 @@ def score_with_relative_path_length_dif(bs: BoardState) -> float:
     players.
 
     :return: if one way is blocked -1000, if player won inf, otherwise (
-    l2-l1)/l1.
+       l2-l1)/l1.
     """
     dist_graph = sp.csgraph.shortest_path(
         bs.free_paths.tocsr(),
