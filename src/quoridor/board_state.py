@@ -58,6 +58,7 @@ class BoardState:
     """
 
     walls: set[tuple[int, int, int]]
+    free_paths: sp.dok_matrix
 
     def __init__(self, first_player: int = 0) -> None:
         """Initialize the board state as the begining of a game.

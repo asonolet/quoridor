@@ -32,4 +32,4 @@ def score_with_relative_path_length_dif(bs: BoardState) -> float:
     if np.inf in (l1, l2):
         return SCORE_MIN
 
-    return 2 * (l2 - l1) / (l1 + l2)
+    return (l2 - l1) / (l1 + l2)
