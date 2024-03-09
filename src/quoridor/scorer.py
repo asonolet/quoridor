@@ -6,6 +6,7 @@ from scipy import sparse as sp
 from quoridor.board_state import BoardState
 
 SCORE_MIN = -1000
+SCORE_MAX = 1000
 
 
 def score_with_relative_path_length_dif(bs: BoardState) -> float:
@@ -17,6 +18,11 @@ def score_with_relative_path_length_dif(bs: BoardState) -> float:
     :return: if one way is blocked -1000, if player won inf, otherwise (
        l2-l1)/l1.
     """
+    if bs.winner == bs.last_player_nb:
+        return SCORE_MAX
+    if bs.winner == bs.next_player_nb:
+        return SCORE_MIN
+
     dist_graph = sp.csgraph.shortest_path(
         bs.free_paths.tocsr(),
         unweighted=True,

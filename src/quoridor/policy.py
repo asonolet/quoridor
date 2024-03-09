@@ -34,6 +34,8 @@ def play_with_proba(game, rng=None):
 
 
 def _best_move_seeing_future(game, n_future, n_sim, counter):
+    if game.board_state.winner == game.board_state.last_player_nb:
+        return None, LOWEST_SCORE
     # print("  " * counter + f"{counter=}")
     choices, scores = game.evaluate_all_possibilities()
     if counter >= n_future:
@@ -43,25 +45,38 @@ def _best_move_seeing_future(game, n_future, n_sim, counter):
     for move in choices[-n_sim:]:
         # print("  " * counter + f"Testing {move=}")
         game.play(tuple(move))
-        adv_choices, _ = game.evaluate_all_possibilities()
-        scores = []
-        for adv_choice in adv_choices[-1:]:
-            # print("  " * counter + f"  Testing {adv_choice=}")
-            game.play(tuple(adv_choice))
-            _, score = _best_move_seeing_future(
-                game,
-                n_future=n_future,
-                n_sim=1,
-                counter=counter + 1,
-            )
-            game.get_back()
-            scores.append(score)
+        worse_case_score = _score_adversary_possibilities(
+            game, n_future=n_future, n_sim=1, counter=counter
+        )
+        worse_case_scores.append(worse_case_score)
         game.get_back()
-        worse_case_scores.append(min(scores))
     return (
         tuple(choices[-n_sim:][np.argmax(worse_case_scores)]),
         np.max(worse_case_scores),
     )
+
+
+def _score_adversary_possibilities(game, n_future, n_sim, counter):
+    if game.board_state.winner == game.board_state.last_player_nb:
+        return HIGHEST_SCORE * (n_future - counter + 1)
+
+    adv_choices, _ = game.evaluate_all_possibilities()
+    scores = []
+    for adv_choice in adv_choices[-1:]:
+        # print("  " * counter + f"  Testing {adv_choice=}")
+        game.play(tuple(adv_choice))
+        if game.board_state.winner == game.board_state.last_player_nb:
+            score = LOWEST_SCORE * (n_future - counter + 1)
+        else:
+            _, score = _best_move_seeing_future(
+                game,
+                n_future=n_future,
+                n_sim=n_sim,
+                counter=counter + 1,
+            )
+        game.get_back()
+        scores.append(score)
+    return min(scores)
 
 
 def play_seeing_future_rec(game, n_future=2, n_sim=4):

@@ -52,7 +52,7 @@ class Game:
             self.board_state.add_new_wall(choice)
 
     def evaluate(self, choice: tuple[int, int, int]):
-        """Coup is played, scired and unplayed."""
+        """Coup is played, scored and unplayed."""
         self.play(choice)
         score = self.score()
         self.get_back()
@@ -98,7 +98,7 @@ class Game:
                     & (0 < new_coup[1] < BOARD_SIZE)
                     & self.board_state.free_paths[
                         10 * new_coup[0] + new_coup[1],
-                        new_position[0] * 10 + new_position[1],
+                        10 * new_position[0] + new_position[1],
                     ]
                 ):
                     all_moves.append(new_coup)
@@ -111,7 +111,7 @@ class Game:
             np.nonzero(self.board_state.wall_possibilities > 0),
         )
 
-    def all_possibilities(self):
+    def _all_possibilities(self):
         """Return current possibilities.
 
         List of possible moves and possible wall placements. Does not
@@ -195,7 +195,7 @@ class Game:
         :param player_number: int
         :return: best possibilities, cost (increasing).
         """
-        all_coups = self.all_possibilities()
+        all_coups = self._all_possibilities()
         # attention de temps en temps all_coups est de dimension 1 et ça plante
         all_scores = np.apply_along_axis(
             lambda x: self.evaluate(tuple(x)),
