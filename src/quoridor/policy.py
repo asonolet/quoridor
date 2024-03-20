@@ -26,7 +26,9 @@ def play_with_proba(game, rng=None):
     res, cost = game.evaluate_all_possibilities()
     maxi = np.max(cost)
     cost = cost + 1 - maxi
-    cost_ = np.where(cost > LOWEST_SCORE / 2, np.exp(100 * cost), 0)
+    cost_ = np.where(
+        cost > LOWEST_SCORE / 2, np.exp(100 * cost), 0
+    )
     cost_ = cost_ / np.sum(cost_)
     if rng is None:
         rng = RNG
@@ -34,7 +36,10 @@ def play_with_proba(game, rng=None):
 
 
 def _best_move_seeing_future(game, n_future, n_sim, counter):
-    if game.board_state.winner == game.board_state.last_player_nb:
+    if (
+        game.board_state.winner
+        == game.board_state.last_player_nb
+    ):
         return None, LOWEST_SCORE
     # print("  " * counter + f"{counter=}")
     choices, scores = game.evaluate_all_possibilities()
@@ -56,8 +61,13 @@ def _best_move_seeing_future(game, n_future, n_sim, counter):
     )
 
 
-def _score_adversary_possibilities(game, n_future, n_sim, counter):
-    if game.board_state.winner == game.board_state.last_player_nb:
+def _score_adversary_possibilities(
+    game, n_future, n_sim, counter
+):
+    if (
+        game.board_state.winner
+        == game.board_state.last_player_nb
+    ):
         return HIGHEST_SCORE * (n_future - counter + 1)
 
     adv_choices, _ = game.evaluate_all_possibilities()
@@ -65,7 +75,10 @@ def _score_adversary_possibilities(game, n_future, n_sim, counter):
     for adv_choice in adv_choices[-1:]:
         # print("  " * counter + f"  Testing {adv_choice=}")
         game.play(tuple(adv_choice))
-        if game.board_state.winner == game.board_state.last_player_nb:
+        if (
+            game.board_state.winner
+            == game.board_state.last_player_nb
+        ):
             score = LOWEST_SCORE * (n_future - counter + 1)
         else:
             _, score = _best_move_seeing_future(
@@ -81,5 +94,7 @@ def _score_adversary_possibilities(game, n_future, n_sim, counter):
 
 def play_seeing_future_rec(game, n_future=2, n_sim=4):
     """Evaluate all possibilities and simulate the score after playing n coups."""
-    coup, _ = _best_move_seeing_future(game, n_future=n_future, n_sim=n_sim, counter=0)
+    coup, _ = _best_move_seeing_future(
+        game, n_future=n_future, n_sim=n_sim, counter=0
+    )
     return coup

@@ -16,7 +16,13 @@ x = ["matplotlib"]
 all = ["tensorflow", "matplotlib"]
 dev = ["pytest", "sphinx", "pydata-sphinx-theme"]
 
+[tool.ruff]
+line-length = 65
+
+[tool.ruff.format]
+docstring-code-format = true
+
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["ANN", "ANN101", "ANN102", "ERA001", "T201", "COM812", "ISC001", "D203", "D213", "S101"]
+ignore = ["ANN", "ANN101", "ANN102", "ERA001", "T201", "COM812", "ISC001", "D202", "D203", "D213", "S101"]
 exclude = ["doc/conf.py", "tests/*", "src/reinforcement/*", "src/graphical/*", "app/*"]

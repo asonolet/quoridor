@@ -12,7 +12,11 @@ warnings.filterwarnings("ignore")
 game = qo.Game("Ready player 1")
 
 # MODEL HYPERPARAMETERS
-state_size = [100, 120, 4]  # Our input is a stack of 4 frames hence
+state_size = [
+    100,
+    120,
+    4,
+]  # Our input is a stack of 4 frames hence
 # 100x120x4 (Width, height, channels)
 action_size = game.get_available_buttons_size()  # 7 possible
 # actions
@@ -25,19 +29,25 @@ max_steps = 5000  # Max possible steps in an episode
 batch_size = 64
 
 # FIXED Q TARGETS HYPERPARAMETERS
-max_tau = 10000  # Tau is the C step where we update our target network
+max_tau = (
+    10000  # Tau is the C step where we update our target network
+)
 
 # EXPLORATION HYPERPARAMETERS for epsilon greedy strategy
 explore_start = 1.0  # exploration probability at start
 explore_stop = 0.01  # minimum exploration probability
-decay_rate = 0.00005  # exponential decay rate for exploration prob
+decay_rate = (
+    0.00005  # exponential decay rate for exploration prob
+)
 
 # Q LEARNING hyperparameters
 gamma = 0.95  # Discounting rate
 
 # MEMORY HYPERPARAMETERS
 # If you have GPU change to 1million
-pretrain_length = 100000  # Number of experiences stored in the Memory when
+pretrain_length = (
+    100000  # Number of experiences stored in the Memory when
+)
 # initialized for the first time
 memory_size = 100000  # Number of experiences the Memory can keep
 
@@ -46,7 +56,9 @@ training = False
 
 
 class DDDQNNet:
-    def __init__(self, state_size, action_size, learning_rate, name) -> None:
+    def __init__(
+        self, state_size, action_size, learning_rate, name
+    ) -> None:
         self.state_size = state_size
         self.action_size = action_size
         self.learning_rate = learning_rate
@@ -67,7 +79,9 @@ class DDDQNNet:
                 name="inputs",
             )
 
-            self.ISWeights_ = tf.placeholder(tf.float32, [None, 1], name="IS_weights")
+            self.ISWeights_ = tf.placeholder(
+                tf.float32, [None, 1], name="IS_weights"
+            )
 
             self.actions_ = tf.placeholder(
                 tf.float32,
@@ -76,7 +90,9 @@ class DDDQNNet:
             )
 
             # Remember that target_Q is the R(s,a) + ymax Qhat(s', a')
-            self.target_Q = tf.placeholder(tf.float32, [None], name="target")
+            self.target_Q = tf.placeholder(
+                tf.float32, [None], name="target"
+            )
 
             """
             First layer:
@@ -92,7 +108,9 @@ class DDDQNNet:
                 name="layer1",
             )
 
-            self.lay1_out = tf.nn.elu(self.lay1, name="layer1_out")
+            self.lay1_out = tf.nn.elu(
+                self.lay1, name="layer1_out"
+            )
 
             """
             Second layer:
@@ -107,7 +125,9 @@ class DDDQNNet:
                 name="layer2",
             )
 
-            self.lay2_out = tf.nn.elu(self.lay2, name="layer2_out")
+            self.lay2_out = tf.nn.elu(
+                self.lay2, name="layer2_out"
+            )
 
             """
             Third layer:
@@ -122,7 +142,9 @@ class DDDQNNet:
                 name="layer3",
             )
 
-            self.lay3_out = tf.nn.elu(self.lay2, name="layer3_out")
+            self.lay3_out = tf.nn.elu(
+                self.lay2, name="layer3_out"
+            )
 
             # Here we separate into two streams
             # The one that calculate V(s)
@@ -163,11 +185,15 @@ class DDDQNNet:
             # Q(s,a) = V(s) + (A(s,a) - 1/|A| * sum A(s,a'))
             self.output = self.value + tf.subtract(
                 self.advantage,
-                tf.reduce_mean(self.advantage, axis=1, keepdims=True),
+                tf.reduce_mean(
+                    self.advantage, axis=1, keepdims=True
+                ),
             )
 
             # Q is our predicted Q value.
-            self.Q = tf.reduce_sum(tf.multiply(self.output, self.actions_), axis=1)
+            self.Q = tf.reduce_sum(
+                tf.multiply(self.output, self.actions_), axis=1
+            )
 
             # The loss is modified because of PER
             self.absolute_errors = tf.abs(
@@ -175,10 +201,13 @@ class DDDQNNet:
             )  # for updating Sumtree
 
             self.loss = tf.reduce_mean(
-                self.ISWeights_ * tf.squared_difference(self.target_Q, self.Q),
+                self.ISWeights_
+                * tf.squared_difference(self.target_Q, self.Q),
             )
 
-            self.optimizer = tf.train.RMSPropOptimizer(self.learning_rate).minimize(
+            self.optimizer = tf.train.RMSPropOptimizer(
+                self.learning_rate
+            ).minimize(
                 self.loss,
             )
 
@@ -187,12 +216,18 @@ class DDDQNNet:
 tf.reset_default_graph()
 
 # Instantiate the DQNetwork
-DQNetwork = DDDQNNet(state_size, action_size, learning_rate, name="DQNetwork")
+DQNetwork = DDDQNNet(
+    state_size, action_size, learning_rate, name="DQNetwork"
+)
 
 # Instantiate the target network
-TargetNetwork = DDDQNNet(state_size, action_size, learning_rate, name="TargetNetwork")
+TargetNetwork = DDDQNNet(
+    state_size, action_size, learning_rate, name="TargetNetwork"
+)
 
-EnvNetwork = DDDQNNet(state_size, action_size, learning_rate, name="EnvNetwork")
+EnvNetwork = DDDQNNet(
+    state_size, action_size, learning_rate, name="EnvNetwork"
+)
 
 
 class SumTree:
@@ -208,7 +243,9 @@ class SumTree:
     """
 
     def __init__(self, capacity) -> None:
-        self.capacity = capacity  # Number of leaf nodes (final nodes) that
+        self.capacity = (
+            capacity  # Number of leaf nodes (final nodes) that
+        )
         # contains experiences
 
         # Generate the tree with all nodes values = 0
@@ -331,7 +368,11 @@ tree_index  0 0  0  We fill the leaves from left to right
 
         data_index = leaf_index - self.capacity + 1
 
-        return leaf_index, self.tree[leaf_index], self.data[data_index]
+        return (
+            leaf_index,
+            self.tree[leaf_index],
+            self.data[data_index],
+        )
 
     @property
     def total_priority(self):
@@ -373,7 +414,9 @@ class Memory:  # stored as ( s, a, r, s_ ) in SumTree
 
     def store(self, experience) -> None:
         # Find the max priority
-        max_priority = np.max(self.tree.tree[-self.tree.capacity :])
+        max_priority = np.max(
+            self.tree.tree[-self.tree.capacity :]
+        )
 
         # If the max priority = 0 we can't put priority = 0 since this exp
         # will never have a chance to be selected
@@ -381,7 +424,9 @@ class Memory:  # stored as ( s, a, r, s_ ) in SumTree
         if max_priority == 0:
             max_priority = self.absolute_error_upper
 
-        self.tree.add(max_priority, experience)  # set the max p for new p
+        self.tree.add(
+            max_priority, experience
+        )  # set the max p for new p
 
     """
     - First, to sample a minibatch of k size, the range [0, priority_total]
@@ -404,22 +449,33 @@ class Memory:  # stored as ( s, a, r, s_ ) in SumTree
         # Calculate the priority segment
         # Here, as explained in the paper, we divide the Range[0, ptotal]
         # into n ranges
-        priority_segment = self.tree.total_priority / n  # priority segment
+        priority_segment = (
+            self.tree.total_priority / n
+        )  # priority segment
 
         # Here we increasing the PER_b each time we sample a new minibatch
         self.PER_b = np.min(
-            [1.0, self.PER_b + self.PER_b_increment_per_sampling],
+            [
+                1.0,
+                self.PER_b + self.PER_b_increment_per_sampling,
+            ],
         )  # max = 1
 
         # Calculating the max_weight
-        p_min = np.min(self.tree.tree[-self.tree.capacity :]) / self.tree.total_priority
+        p_min = (
+            np.min(self.tree.tree[-self.tree.capacity :])
+            / self.tree.total_priority
+        )
         max_weight = (p_min * n) ** (-self.PER_b)
 
         for i in range(n):
             """
             A value is uniformly sample from each range
             """
-            a, b = priority_segment * i, priority_segment * (i + 1)
+            a, b = (
+                priority_segment * i,
+                priority_segment * (i + 1),
+            )
             value = np.random.uniform(a, b)
 
             """
@@ -428,11 +484,14 @@ class Memory:  # stored as ( s, a, r, s_ ) in SumTree
             index, priority, data = self.tree.get_leaf(value)
 
             # P(j)
-            sampling_probabilities = priority / self.tree.total_priority
+            sampling_probabilities = (
+                priority / self.tree.total_priority
+            )
 
             #  IS = (1/N * 1/P(i))**b /max wi == (N*P(i))**-b  /max wi
             b_ISWeights[i, 0] = (
-                np.power(n * sampling_probabilities, -self.PER_b) / max_weight
+                np.power(n * sampling_probabilities, -self.PER_b)
+                / max_weight
             )
 
             b_idx[i] = index
@@ -449,7 +508,9 @@ class Memory:  # stored as ( s, a, r, s_ ) in SumTree
 
     def batch_update(self, tree_idx, abs_errors) -> None:
         abs_errors += self.PER_e  # convert to abs and avoid 0
-        clipped_errors = np.minimum(abs_errors, self.absolute_error_upper)
+        clipped_errors = np.minimum(
+            abs_errors, self.absolute_error_upper
+        )
         ps = np.power(clipped_errors, self.PER_a)
 
         for ti, p in zip(tree_idx, ps):
@@ -467,7 +528,9 @@ for i in range(pretrain_length):
     if i == 0:
         # First we need a state
         state = game.get_state().screen_buffer
-        state, stacked_frames = stack_frames(stacked_frames, state, True)
+        state, stacked_frames = stack_frames(
+            stacked_frames, state, True
+        )
 
     # Random action
     action = random.choice(possible_actions)
@@ -496,12 +559,16 @@ for i in range(pretrain_length):
         state = game.get_state().screen_buffer
 
         # Stack the frames
-        state, stacked_frames = stack_frames(stacked_frames, state, True)
+        state, stacked_frames = stack_frames(
+            stacked_frames, state, True
+        )
 
     else:
         # Get the next state
         next_state = game.get_state().screen_buffer
-        next_state, stacked_frames = stack_frames(stacked_frames, next_state, False)
+        next_state, stacked_frames = stack_frames(
+            stacked_frames, next_state, False
+        )
 
         # Add experience to memory
         experience = state, action, reward, next_state, done
@@ -541,7 +608,9 @@ def predict_action(
 
     # Here we'll use an improved version of our epsilon greedy strategy used
     # in Q-learning notebook
-    explore_probability = explore_stop + (explore_start - explore_stop) * np.exp(
+    explore_probability = explore_stop + (
+        explore_start - explore_stop
+    ) * np.exp(
         -decay_rate * decay_step,
     )
 
@@ -554,7 +623,11 @@ def predict_action(
         # Estimate the Qs values state
         Qs = sess.run(
             DQNetwork.output,
-            feed_dict={DQNetwork.inputs_: state.reshape((1, *state.shape))},
+            feed_dict={
+                DQNetwork.inputs_: state.reshape(
+                    (1, *state.shape)
+                )
+            },
         )
 
         # Take the biggest Q value (= the best action)
@@ -571,10 +644,14 @@ def predict_action(
 # https://github.com/awjuliani
 def update_target_graph():
     # Get the parameters of our DQNNetwork
-    from_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "DQNetwork")
+    from_vars = tf.get_collection(
+        tf.GraphKeys.TRAINABLE_VARIABLES, "DQNetwork"
+    )
 
     # Get the parameters of our Target_network
-    to_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "TargetNetwork")
+    to_vars = tf.get_collection(
+        tf.GraphKeys.TRAINABLE_VARIABLES, "TargetNetwork"
+    )
 
     op_holder = []
 
@@ -623,7 +700,9 @@ if training:
 
             # Remember that stack frame function also call our preprocess
             # function.
-            state, stacked_frames = stack_frames(stacked_frames, state, True)
+            state, stacked_frames = stack_frames(
+                stacked_frames, state, True
+            )
 
             # TODO: attention, dans cette boucle si on arrive en fin de
             # partie on continue à updater notre réseau sur des coups qui ne
@@ -685,7 +764,13 @@ if training:
                     )
 
                     # Add experience to memory
-                    experience = state, action, reward, next_state, done
+                    experience = (
+                        state,
+                        action,
+                        reward,
+                        next_state,
+                        done,
+                    )
                     memory.store(experience)
 
                 else:
@@ -700,7 +785,13 @@ if training:
                     )
 
                     # Add experience to memory
-                    experience = state, action, reward, next_state, done
+                    experience = (
+                        state,
+                        action,
+                        reward,
+                        next_state,
+                        done,
+                    )
                     memory.store(experience)
 
                     # st+1 is now our current state
@@ -714,13 +805,25 @@ if training:
                 # n'est pas sorti de la boucle et qu'on est arrivé en fin de
                 # partie ça nous permet de rejouer des
                 # coups déjà appris.
-                tree_idx, batch, ISWeights_mb = memory.sample(batch_size)
+                tree_idx, batch, ISWeights_mb = memory.sample(
+                    batch_size
+                )
 
-                states_mb = np.array([each[0][0] for each in batch], ndmin=3)
-                actions_mb = np.array([each[0][1] for each in batch])
-                rewards_mb = np.array([each[0][2] for each in batch])
-                next_states_mb = np.array([each[0][3] for each in batch], ndmin=3)
-                dones_mb = np.array([each[0][4] for each in batch])
+                states_mb = np.array(
+                    [each[0][0] for each in batch], ndmin=3
+                )
+                actions_mb = np.array(
+                    [each[0][1] for each in batch]
+                )
+                rewards_mb = np.array(
+                    [each[0][2] for each in batch]
+                )
+                next_states_mb = np.array(
+                    [each[0][3] for each in batch], ndmin=3
+                )
+                dones_mb = np.array(
+                    [each[0][4] for each in batch]
+                )
 
                 target_Qs_batch = []
 
@@ -732,13 +835,17 @@ if training:
                 # Get Q values for next_state
                 q_next_state = sess.run(
                     DQNetwork.output,
-                    feed_dict={DQNetwork.inputs_: next_states_mb},
+                    feed_dict={
+                        DQNetwork.inputs_: next_states_mb
+                    },
                 )
 
                 # Calculate Qtarget for all actions that state
                 q_target_next_state = sess.run(
                     TargetNetwork.output,
-                    feed_dict={TargetNetwork.inputs_: next_states_mb},
+                    feed_dict={
+                        TargetNetwork.inputs_: next_states_mb
+                    },
                 )
 
                 # Set Q_target = r if the episode ends at s+1, otherwise set
@@ -755,13 +862,21 @@ if training:
 
                     else:
                         # Take the Qtarget for action a'
-                        target = rewards_mb[i] + gamma * q_target_next_state[i][action]
+                        target = (
+                            rewards_mb[i]
+                            + gamma
+                            * q_target_next_state[i][action]
+                        )
                         target_Qs_batch.append(target)
 
                 targets_mb = np.array(list(target_Qs_batch))
 
                 _, loss, absolute_errors = sess.run(
-                    [DQNetwork.optimizer, DQNetwork.loss, DQNetwork.absolute_errors],
+                    [
+                        DQNetwork.optimizer,
+                        DQNetwork.loss,
+                        DQNetwork.absolute_errors,
+                    ],
                     feed_dict={
                         DQNetwork.inputs_: states_mb,
                         DQNetwork.target_Q: targets_mb,
@@ -796,5 +911,7 @@ if training:
 
             # Save model every 5 episodes
             if episode % 5 == 0:
-                save_path = saver.save(sess, "./models/model.ckpt")
+                save_path = saver.save(
+                    sess, "./models/model.ckpt"
+                )
                 print("Model Saved")

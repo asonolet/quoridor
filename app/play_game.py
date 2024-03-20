@@ -11,7 +11,9 @@ if __name__ == "__main__":
     game = Game("partie 1")
     bs = game.board_state
     print("Player 0 pos, ", bs.player.position)
-    print("Player 1 pos, ", bs.players[bs.last_player_nb].position)
+    print(
+        "Player 1 pos, ", bs.players[bs.last_player_nb].position
+    )
     pt.plot(bs)
     debut = time.time()
     i = 0

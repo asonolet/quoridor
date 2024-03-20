@@ -29,13 +29,18 @@ class Env:
         return self.obs()
 
     def obs(self):
-        return self.g.board_state.to_universal_state(0), self.g.moves_allowed(0)
+        return self.g.board_state.to_universal_state(
+            0
+        ), self.g.moves_allowed(0)
 
     def step(self, categorical_action_, plotter=None):
         # le + 128 est un hack pour jouer seulement des mouvements
         categorical_move_ = categorical_action_ + 128
 
-        action_, is_correct = self._from_categorical_to_action_no_check(
+        (
+            action_,
+            is_correct,
+        ) = self._from_categorical_to_action_no_check(
             categorical_move_,
         )
         if plotter is not None:
@@ -49,15 +54,24 @@ class Env:
                 plotter.play(self.g, 1, coup_adv)
             self.g.coup(coup_adv, 1)
             reward = (
-                score_with_relative_path_length_dif(self.g.board_state, 0)
+                score_with_relative_path_length_dif(
+                    self.g.board_state, 0
+                )
                 - self.previous_reward
             )
             self.previous_reward = reward
-            return self.obs(), reward, self.g.board_state.winner != -1, plotter
+            return (
+                self.obs(),
+                reward,
+                self.g.board_state.winner != -1,
+                plotter,
+            )
         else:
             return None, -10, 1, plotter
 
-    def _from_categorical_to_action_no_check(self, categorical_action):
+    def _from_categorical_to_action_no_check(
+        self, categorical_action
+    ):
         ind = int(categorical_action)
         # si le coup que veux jouer le réseau correspond à un mur :
         if ind < self.action_space.n - 4:
@@ -96,16 +110,24 @@ class Env:
             # S'il lui reste encore des murs à jouer :
             if self.g.board_state.player[0].n_tuiles > 0:
                 action_ = self.g.all_walls_choices[ind, :]
-                scalar_action = 100 * action_[0] + 10 * action_[1] + action_[2]
+                scalar_action = (
+                    100 * action_[0]
+                    + 10 * action_[1]
+                    + action_[2]
+                )
                 all_walls_available = np.transpose(
-                    np.nonzero(self.g.board_state.wall_possibilities > 0),
+                    np.nonzero(
+                        self.g.board_state.wall_possibilities > 0
+                    ),
                 )
                 test_set = (
                     100 * all_walls_available[:, 0]
                     + 10 * all_walls_available[:, 1]
                     + all_walls_available[:, 2]
                 )
-                is_correct = np.isin(scalar_action, test_set, assume_unique=True)
+                is_correct = np.isin(
+                    scalar_action, test_set, assume_unique=True
+                )
             else:
                 action_ = None
                 is_correct = False
@@ -146,7 +168,9 @@ class ProbabilityDistribution(tf.keras.Model):
         # toutes celles qui correspondent à des coups interdits. A mois qu'on
         # ne mette des scores horribles aux coups interdits joués. Je vais
         # plutôt faire ça.
-        return tf.squeeze(tf.random.categorical(logits, 1), axis=-1)
+        return tf.squeeze(
+            tf.random.categorical(logits, 1), axis=-1
+        )
 
 
 class Model(tf.keras.Model):
@@ -157,7 +181,9 @@ class Model(tf.keras.Model):
         self.conv2 = kl.Conv2D(10, (3, 3), activation="relu")
         self.conv3 = kl.Conv2D(10, (4, 4), activation="relu")
         self.flatten = kl.Flatten()
-        self.hidden_other = kl.Dense(6, activation="relu", name="hidden_other")
+        self.hidden_other = kl.Dense(
+            6, activation="relu", name="hidden_other"
+        )
         # self.hidden1 = kl.Dense(128, activation='relu')
         # self.hidden2 = kl.Dense(128, activation='relu')
         self.value = kl.Dense(1, name="value")
@@ -192,7 +218,12 @@ class Model(tf.keras.Model):
             move_choice,
             -np.inf * tf.ones_like(move_choice),
         )
-        return move_choice_allowed, self.value(hidden), move_choice, hidden
+        return (
+            move_choice_allowed,
+            self.value(hidden),
+            move_choice,
+            hidden,
+        )
         # self.logits(hidden),
 
     def action_value(self, obs):
@@ -204,7 +235,9 @@ class Model(tf.keras.Model):
         # Another way to sample actions:
         #   action = tf.random.categorical(logits, 1)
         # Will become clearer later why we don't use it.
-        return np.squeeze(action, axis=-1), np.squeeze(value, axis=-1)  # , \
+        return np.squeeze(action, axis=-1), np.squeeze(
+            value, axis=-1
+        )  # , \
         # np.squeeze(naive_logits, axis=-1)
 
 
@@ -229,7 +262,11 @@ class A2CAgent:
             self.model.compile(
                 optimizer=ko.RMSprop(lr=lr),
                 # Define separate losses for policy logits and value estimate.
-                loss=[self._logits_loss, self._value_loss, self._rules_loss],
+                loss=[
+                    self._logits_loss,
+                    self._value_loss,
+                    self._rules_loss,
+                ],
             )
 
     def test(self, env, render=False):
@@ -237,13 +274,22 @@ class A2CAgent:
         plotter = Plotter() if render else None
 
         while not done:
-            action, _ = self.model.action_value((obs[0][None, :], obs[1][None, :]))
+            action, _ = self.model.action_value(
+                (obs[0][None, :], obs[1][None, :])
+            )
 
-            allowed_choices_proba, _, choices_proba, __ = self.model(
+            (
+                allowed_choices_proba,
+                _,
+                choices_proba,
+                __,
+            ) = self.model(
                 (obs[0][None, :], obs[1][None, :]),
             )  # , \
             #
-            obs, reward, done, plotter = env.step(action, plotter)
+            obs, reward, done, plotter = env.step(
+                action, plotter
+            )
             # reward = g.coups(action)
             #
             ep_reward += reward
@@ -254,25 +300,35 @@ class A2CAgent:
 
     def _value_loss(self, returns, value):
         # Value loss is typically MSE between value estimates and returns.
-        return self.value_c * kls.mean_squared_error(returns, value)
+        return self.value_c * kls.mean_squared_error(
+            returns, value
+        )
 
     def _rules_loss(self, allowed_choices, naive_logits):
-        return kls.mean_squared_error(allowed_choices, naive_logits)
+        return kls.mean_squared_error(
+            allowed_choices, naive_logits
+        )
 
     def _logits_loss(self, actions_and_advantages, logits):
         # A trick to input actions and advantages through the same API.
-        actions, advantages = tf.split(actions_and_advantages, 2, axis=-1)
+        actions, advantages = tf.split(
+            actions_and_advantages, 2, axis=-1
+        )
 
         # Sparse categorical CE loss obj that supports sample_weight arg on
         # `call()`.
         # `from_logits` argument ensures transformation into normalized
         # probabilities.
-        weighted_sparse_ce = kls.SparseCategoricalCrossentropy(from_logits=True)
+        weighted_sparse_ce = kls.SparseCategoricalCrossentropy(
+            from_logits=True
+        )
 
         # Policy loss is defined by policy gradients, weighted by advantages.
         # Note: we only calculate the loss on the actions we've actually taken.
         actions = tf.cast(actions, tf.int32)
-        policy_loss = weighted_sparse_ce(actions, logits, sample_weight=advantages)
+        policy_loss = weighted_sparse_ce(
+            actions, logits, sample_weight=advantages
+        )
 
         # Entropy loss can be calculated as cross-entropy over itself.
         probs = tf.nn.softmax(logits)
@@ -291,10 +347,16 @@ class A2CAgent:
         n = 4
         # Storage helpers for a single batch of data.
         actions = np.empty((batch_sz,), dtype=np.int32)
-        allowed_choices_proba = np.empty((batch_sz, n), dtype=np.int32)
+        allowed_choices_proba = np.empty(
+            (batch_sz, n), dtype=np.int32
+        )
         rewards, dones, values = np.empty((3, batch_sz))
-        observations1 = np.empty((batch_sz, *env.observation_space[0].shape))
-        observations2 = np.empty((batch_sz, *env.observation_space[1].shape))
+        observations1 = np.empty(
+            (batch_sz, *env.observation_space[0].shape)
+        )
+        observations2 = np.empty(
+            (batch_sz, *env.observation_space[1].shape)
+        )
 
         # Training loop: collect samples, send to optimizer, repeat updates
         # times.
@@ -304,13 +366,26 @@ class A2CAgent:
             for step in range(batch_sz):
                 observations1[step] = next_obs[0].copy()
                 observations2[step] = next_obs[1].copy()
-                actions[step], values[step] = self.model.action_value(
+                (
+                    actions[step],
+                    values[step],
+                ) = self.model.action_value(
                     (next_obs[0][None, :], next_obs[1][None, :]),
                 )
-                allowed_choices_proba[step, :], _, _, __ = self.model(
+                (
+                    allowed_choices_proba[step, :],
+                    _,
+                    _,
+                    __,
+                ) = self.model(
                     (next_obs[0][None, :], next_obs[1][None, :]),
                 )
-                next_obs, rewards[step], dones[step], _ = env.step(actions[step])
+                (
+                    next_obs,
+                    rewards[step],
+                    dones[step],
+                    _,
+                ) = env.step(actions[step])
                 # mettre en place une boucle qui rapelle un step
                 # d'entrainement tant que le réseau ne donne pas une action
                 # autorisée. Pour le moment on met juste un score pourri et
@@ -331,9 +406,13 @@ class A2CAgent:
                 (next_obs[0][None, :], next_obs[1][None, :]),
             )
 
-            returns, advs = self._returns_advantages(rewards, dones, values, next_value)
+            returns, advs = self._returns_advantages(
+                rewards, dones, values, next_value
+            )
             # A trick to input actions and advantages through same API.
-            acts_and_advs = np.concatenate([actions[:, None], advs[:, None]], axis=-1)
+            acts_and_advs = np.concatenate(
+                [actions[:, None], advs[:, None]], axis=-1
+            )
 
             # Performs a full training step on the collected batch.
             # Note: no need to mess around with gradients, Keras API handles it.
@@ -343,7 +422,10 @@ class A2CAgent:
             )  # , \
             #
 
-            logging.debug("[%d/%d] Losses: %s" % (update + 1, updates, losses))
+            logging.debug(
+                "[%d/%d] Losses: %s"
+                % (update + 1, updates, losses)
+            )
 
             print(update)
             if update % 40 == 0:
@@ -352,14 +434,20 @@ class A2CAgent:
 
         return ep_rewards
 
-    def _returns_advantages(self, rewards, dones, values, next_value):
+    def _returns_advantages(
+        self, rewards, dones, values, next_value
+    ):
         # `next_value` is the bootstrap value estimate of the future state (
         # critic).
-        returns = np.append(np.zeros_like(rewards), next_value, axis=-1)
+        returns = np.append(
+            np.zeros_like(rewards), next_value, axis=-1
+        )
 
         # Returns are calculated as discounted sum of future rewards.
         for t in reversed(range(rewards.shape[0])):
-            returns[t] = rewards[t] + self.gamma * returns[t + 1] * (1 - dones[t])
+            returns[t] = rewards[t] + self.gamma * returns[
+                t + 1
+            ] * (1 - dones[t])
         returns = returns[:-1]
 
         # Advantages are equal to returns - baseline (value estimates in our

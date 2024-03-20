@@ -49,12 +49,20 @@ class Plotter:
             for i, point in enumerate(a.collections):
                 if np.all(
                     point._offsets  # noqa: SLF001
-                    == np.array([game.board_state.player[player_number].position])
+                    == np.array(
+                        [
+                            game.board_state.player[
+                                player_number
+                            ].position
+                        ]
+                    )
                     + np.array([[0.5, 0.5]]),
                 ):
                     a.collections.pop(i)
             plt.pause(0.2)
-            plt.scatter([move[0] + 0.5], [move[1] + 0.5], c=color, s=80)
+            plt.scatter(
+                [move[0] + 0.5], [move[1] + 0.5], c=color, s=80
+            )
 
         else:
             return

@@ -54,25 +54,25 @@ class BoardState:
     """BoardState object is used to play at one instant.
 
     A game is a succession of BoardState.
-    Methods to pass from one BoardState to an other are declared here.
+    Methods to pass from one BoardState to an other are declared
+    here.
     """
-
-    walls: set[tuple[int, int, int]]
-    free_paths: sp.dok_matrix
 
     def __init__(self, first_player: int = 0) -> None:
         """Initialize the board state as the begining of a game.
 
-        :param first_player: the first player to play. Player 0 start
-           from bottom and player 1 at top (j=BOARD_SIZE - 1).
+        :param first_player: the first player to play. Player 0
+        start from bottom and player 1 at top (j=BOARD_SIZE - 1).
         """
-        self.wall_possibilities = np.ones((BOARD_SIZE - 1, BOARD_SIZE - 1, 2))
+        self.wall_possibilities = np.ones(
+            (BOARD_SIZE - 1, BOARD_SIZE - 1, 2)
+        )
         self.players = [Player(0), Player(1)]
-        self.played_coup = 0
+        self.played_coup: int = 0
         self._first_player = first_player
-        self.free_paths = _init_free_paths()
-        self.winner = -1
-        self.walls = set()
+        self.free_paths: sp.dok_matrix = _init_free_paths()
+        self.winner: int = -1
+        self.walls: set[tuple[int, int, int]] = set()
 
     @property
     def next_player_nb(self) -> int:
@@ -94,7 +94,9 @@ class BoardState:
         """The player who just played."""
         return self.players[self.last_player_nb]
 
-    def update_player_positions(self, new_position: tuple[int, int, int]) -> None:
+    def update_player_positions(
+        self, new_position: tuple[int, int, int]
+    ) -> None:
         """Update player position and actualize the winner.
 
         :param new_position: [i,j,-1]
@@ -102,13 +104,16 @@ class BoardState:
         :return:
         """
         if (self.next_player_nb and new_position[1] == 0) or (
-            not self.next_player_nb and new_position[1] == BOARD_SIZE - 1
+            not self.next_player_nb
+            and new_position[1] == BOARD_SIZE - 1
         ):
             self.winner = self.next_player_nb
         self.player.position = (new_position[0], new_position[1])
         self.played_coup += 1
 
-    def reset_player_position(self, last_pos: tuple[int, int, int]) -> None:
+    def reset_player_position(
+        self, last_pos: tuple[int, int, int]
+    ) -> None:
         """Reset player position to last position.
 
         :param new_position: [i,j,-1]
@@ -118,7 +123,9 @@ class BoardState:
         self.last_player.position = (last_pos[0], last_pos[1])
         self.played_coup -= 1
 
-    def add_new_wall(self, new_position: tuple[int, int, int]) -> None:
+    def add_new_wall(
+        self, new_position: tuple[int, int, int]
+    ) -> None:
         """Add wall.
 
         Modify wall possibilities,
@@ -159,7 +166,9 @@ class BoardState:
             self.free_paths[k + 11, k + 1] = False
         self.played_coup += 1
 
-    def remove_wall(self, new_position: tuple[int, int, int]) -> None:
+    def remove_wall(
+        self, new_position: tuple[int, int, int]
+    ) -> None:
         """Undo an add wall operation.
 
         Add one wall in remaining player walls,
@@ -177,8 +186,12 @@ class BoardState:
         self.walls.remove(new_position)
         x, y = new_position[0], new_position[1]
         k = 10 * x + y
-        self.wall_possibilities[x, y, 0] = min(1, self.wall_possibilities[x, y, 0] + 1)
-        self.wall_possibilities[x, y, 1] = min(1, self.wall_possibilities[x, y, 1] + 1)
+        self.wall_possibilities[x, y, 0] = min(
+            1, self.wall_possibilities[x, y, 0] + 1
+        )
+        self.wall_possibilities[x, y, 1] = min(
+            1, self.wall_possibilities[x, y, 1] + 1
+        )
 
         if new_position[2] == 0:
             if x < BOARD_SIZE - 2:
@@ -221,8 +234,10 @@ class BoardState:
         """Supposed to be a universal representation."""
         return np.r_[
             np.ravel(self.wall_possibilities),
-            np.array(self.players[i_ % 2].position) / (BOARD_SIZE - 1),
-            np.array(self.players[(i_ + 1) % 2].position) / (BOARD_SIZE - 1),
+            np.array(self.players[i_ % 2].position)
+            / (BOARD_SIZE - 1),
+            np.array(self.players[(i_ + 1) % 2].position)
+            / (BOARD_SIZE - 1),
             self.players[i_ % 2].n_tuiles / 10,
             self.players[(i_ + 1) % 2].n_tuiles / 10,
         ]

@@ -6,7 +6,8 @@ from tensorflow.keras import Model
 from tensorflow.keras.layers import Dense
 
 states = np.load(
-    "play_with_proba_without_score/" + os.listdir("play_with_proba_without_score/")[1],
+    "play_with_proba_without_score/"
+    + os.listdir("play_with_proba_without_score/")[1],
 )
 n, p = states.shape
 p = p - 6
@@ -72,7 +73,10 @@ test_loss = tf.keras.metrics.Mean(name="test_loss")
 
 @tf.function
 def accuracy(x, y):
-    true_tab = tf.reduce_all(tf.equal(tf.math.round(x), tf.cast(y, tf.float32)), axis=1)
+    true_tab = tf.reduce_all(
+        tf.equal(tf.math.round(x), tf.cast(y, tf.float32)),
+        axis=1,
+    )
     return tf.shape(true_tab[true_tab])[0] / tf.shape(x)[0]
 
 
@@ -84,8 +88,12 @@ def train_step(s) -> None:
         predictions = autoencode(s)
         loss = loss_object(s, predictions)
     train_loss(loss)
-    gradients = tape.gradient(loss, autoencode.trainable_variables)
-    optimizer.apply_gradients(zip(gradients, autoencode.trainable_variables))
+    gradients = tape.gradient(
+        loss, autoencode.trainable_variables
+    )
+    optimizer.apply_gradients(
+        zip(gradients, autoencode.trainable_variables)
+    )
 
 
 @tf.function
@@ -108,7 +116,9 @@ for file in os.listdir("play_with_proba_without_score/")[:100]:
     np.random.shuffle(states)
 
     train_ds = (
-        tf.data.Dataset.from_tensor_slices(states[: int(train_ratio * n), :-6])
+        tf.data.Dataset.from_tensor_slices(
+            states[: int(train_ratio * n), :-6]
+        )
         .shuffle(100)
         .batch(32)
     )
@@ -140,11 +150,18 @@ for file in os.listdir("play_with_proba_without_score/")[:100]:
             pred = test_step(test_state)
             # print(pred)
             # print(test_state)
-            print("Accuracy : %.2f %%" % (accuracy(pred, test_state) * 100))
+            print(
+                "Accuracy : %.2f %%"
+                % (accuracy(pred, test_state) * 100)
+            )
 
-for file in os.listdir("play_with_proba_without_score/")[100:200]:
+for file in os.listdir("play_with_proba_without_score/")[
+    100:200
+]:
     print("File : " + file)
     states = np.load("play_with_proba_without_score/" + file)
     test_state = states[:, :-6]
     pred = test_step(test_state)
-    print("Accuracy : %.2f %%" % (accuracy(pred, test_state) * 100))
+    print(
+        "Accuracy : %.2f %%" % (accuracy(pred, test_state) * 100)
+    )

@@ -5,7 +5,10 @@ from __future__ import annotations
 import numpy as np
 
 from quoridor.board_state import BOARD_SIZE, BoardState
-from quoridor.scorer import SCORE_MIN, score_with_relative_path_length_dif
+from quoridor.scorer import (
+    SCORE_MIN,
+    score_with_relative_path_length_dif,
+)
 
 
 class Game:
@@ -60,7 +63,9 @@ class Game:
 
     def score(self):
         """Score for last player."""
-        return score_with_relative_path_length_dif(self.board_state)
+        return score_with_relative_path_length_dif(
+            self.board_state
+        )
 
     def get_back(self, n: int = 1) -> None:
         """Reset game to n coup before."""
@@ -89,10 +94,17 @@ class Game:
             new_coup = (k // 10, k % 10, -1)
             new_position = new_coup[:2]
             # In this case, both players are next one another
-            if new_position == self.board_state.last_player.position:
-                old_pos = np.array(self.board_state.player.position)
+            if (
+                new_position
+                == self.board_state.last_player.position
+            ):
+                old_pos = np.array(
+                    self.board_state.player.position
+                )
                 new_position = np.array(new_position)
-                new_coup = tuple(np.r_[2 * new_position - old_pos, -1])
+                new_coup = tuple(
+                    np.r_[2 * new_position - old_pos, -1]
+                )
                 if (
                     (0 < new_coup[0] < BOARD_SIZE)
                     & (0 < new_coup[1] < BOARD_SIZE)
@@ -151,14 +163,18 @@ class Game:
         # remplir un tableau de zéros aux bons indices
         if self.board_state.player.n_tuiles > 0:
             all_walls_available = np.transpose(
-                np.nonzero(self.board_state.wall_possibilities > 0),
+                np.nonzero(
+                    self.board_state.wall_possibilities > 0
+                ),
             )
             test_set = (
                 100 * all_walls_available[:, 0]
                 + 10 * all_walls_available[:, 1]
                 + all_walls_available[:, 2]
             )
-            isin = np.isin(self.set, test_set, assume_unique=True)
+            isin = np.isin(
+                self.set, test_set, assume_unique=True
+            )
             indices = np.nonzero(isin)
             scores = SCORE_MIN * np.ones(len(isin))
             scores[indices] = np.apply_along_axis(
@@ -183,7 +199,9 @@ class Game:
             if (move[1] == pos[1]) & (move[0] > pos[0]):
                 moves_scores[3] = self.evaluate(move)
         scores = np.r_[scores, moves_scores]
-        scores[scores != SCORE_MIN] -= np.mean(scores[scores != SCORE_MIN])
+        scores[scores != SCORE_MIN] -= np.mean(
+            scores[scores != SCORE_MIN]
+        )
         return scores
 
     def evaluate_all_possibilities(self):

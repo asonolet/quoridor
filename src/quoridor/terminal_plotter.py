@@ -39,12 +39,18 @@ class TermPlotter:
     def _fill_position_line(self, line: int, bs: BoardState):
         pos = list(self.pos_line)
         if line == 8 - bs.player.position[1]:
-            pos[4 * bs.player.position[0] + 2] = str(bs.next_player_nb)
+            pos[4 * bs.player.position[0] + 2] = str(
+                bs.next_player_nb
+            )
         if line == 8 - bs.last_player.position[1]:
-            pos[4 * bs.last_player.position[0] + 2] = str(bs.last_player_nb)
+            pos[4 * bs.last_player.position[0] + 2] = str(
+                bs.last_player_nb
+            )
         return "".join(pos)
 
-    def _fill_walls(self, lines: list, walls: set[tuple[int, int, int]]):
+    def _fill_walls(
+        self, lines: list, walls: set[tuple[int, int, int]]
+    ):
         lines = [list(line) for line in lines]
         for wall in walls:
             if wall[2] == 0:
