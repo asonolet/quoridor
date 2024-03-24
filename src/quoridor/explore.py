@@ -8,12 +8,17 @@ from __future__ import annotations
 
 import numpy as np
 
+import quoridor.policy as po
 from quoridor.game import Game
 from quoridor.terminal_plotter import TermPlotter
 
 
 class PossibleMove:
-    """Stores the known future score for this move."""
+    """Stores the known future score for this move.
+
+    Be careful, the adv mmoves are stored but not acounted for
+    scoring.
+    """
 
     def __init__(
         self, player_id, move, parent=None, score=np.nan
@@ -26,6 +31,8 @@ class PossibleMove:
 
         if parent is not None:
             parent.addChildren(self)
+        else:
+            self.parent = None
 
     def add_children(self, child):
         """Add a new children.
@@ -37,7 +44,10 @@ class PossibleMove:
 
     @property
     def score(self) -> np.float64:
-        """Returns score computed from childrens."""
+        """Returns score computed from childrens.
+
+        Does not look at adversary scores.
+        """
         if len(self.childs) == 0:
             return self._score
 
@@ -51,6 +61,62 @@ class PossibleMove:
         return max(
             move.score for move in my_future_possible_moves
         )
+
+
+class TreeOperations:
+    """Static methods to go through a tree."""
+
+    @staticmethod
+    def get_path_from_state1_to_state2(state1, state2):
+        """As the name implies.
+
+        Returns
+        -------
+        (int, Path): The number of move to unplay and the
+            remaining path to state2.
+
+        """
+        state1_path = []
+        state2_path = []
+        state = state1
+        while state.parent is not None:
+            state1_path.append(state)
+            state = state.parent
+        state1_path = state1_path[::-1]
+        state = state2
+        while state.parent is not None:
+            state2_path.append(state)
+            state = state.parent
+        state2_path = state2_path[::-1]
+        i = 0
+        while state1_path[i] == state2_path[i]:
+            i += 1
+        return len(state1_path) - i, state2_path[i:]
+
+
+class BestMoves:
+    """Store best moves."""
+
+    def __init__(self, length=4):
+        """Initialise the list of best moves."""
+
+        self._best_moves = np.empty(
+            (length,), dtype=PossibleMove
+        )
+        self._scores = np.empty((length,), dtype=float)
+        self._min_score = 0.0
+
+    def __getitem__(self, i):
+        """Get the i-th best move. 0 is the poorest stored."""
+        return self._best_moves[np.argsort(self._scores)][i]
+
+    def store_if_needed(self, move: PossibleMove):
+        """If score is higher than min score replace it."""
+        score = move.score
+        if score > self._min_score:
+            self._min_score = score
+            self._best_moves[np.argsort(self._scores)][0] = move
+            self._scores[np.argsort(self._scores)][0] = score
 
 
 class Path:
@@ -80,13 +146,13 @@ class Exploration:
     def __init__(self):
         """Init an exploration."""
         self.game: Game = Game("partie 1")
+        self.best_moves: list[PossibleMove] = []
+
         self.bs = self.game.board_state
-        print("Player 0 pos, ", self.bs.player.position)
-        print(
-            "Player 1 pos, ",
-            self.bs.players[bs.last_player_nb].position,
-        )
         self.pt = TermPlotter()
+
+        print("Player 0 pos, ", self.bs.player.position)
+        print("Player 1 pos, ", self.bs.last_player.position)
 
     def __call__(self):
         """Explore."""
