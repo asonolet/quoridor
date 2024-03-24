@@ -16,7 +16,7 @@ from quoridor.terminal_plotter import TermPlotter
 class PossibleMove:
     """Stores the known future score for this move.
 
-    Be careful, the adv mmoves are stored but not acounted for
+    Be careful, the adv moves are stored but not acounted for
     scoring.
     """
 
@@ -146,7 +146,7 @@ class Exploration:
     def __init__(self):
         """Init an exploration."""
         self.game: Game = Game("partie 1")
-        self.best_moves: list[PossibleMove] = []
+        self.best_moves = BestMoves()
 
         self.bs = self.game.board_state
         self.pt = TermPlotter()
@@ -158,15 +158,22 @@ class Exploration:
         """Explore."""
         self.pt.plot(self.bs)
         i = 0
-        # print(game.evaluate_all_possibilities(0))
+        last_possible_move = None
         while self.bs.winner == -1:
-            coup = (
-                po.play_seeing_future_rec(self.game)
+            coup = tuple(
+                po.play_greedy(self.game)
                 if i % 2 == 0
                 else po.play_with_proba(self.game, rng=None)
             )
-            self.game.play(tuple(coup))
+            self.game.play(coup)
             score = self.game.score()
+            last_possible_move = PossibleMove(
+                i % 2,
+                coup,
+                parent=last_possible_move,
+                score=score,
+            )
+            self.best_moves.store_if_needed(last_possible_move)
             print(
                 "Player %1d " % (i % 2),
                 coup,
@@ -175,7 +182,6 @@ class Exploration:
                 self.bs.last_player.position,
             )
             self.pt.plot(self.bs)
-            # time.sleep(0.35)
             i = i + 1
         print(
             "And the winner is ... Player %.1d" % self.bs.winner
