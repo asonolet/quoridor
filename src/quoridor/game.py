@@ -12,7 +12,7 @@ from quoridor.scorer import (
 
 
 class Game:
-    """Game object contains anything a game needs to be played."""
+    """Game object contains anything needed to play."""
 
     def __init__(self, game_name: str) -> None:
         """Initialise a game.
@@ -21,10 +21,6 @@ class Game:
         """
         self.game_name = game_name
         self.board_state = BoardState()
-
-        self.coup_joues = []
-        self.coup_joues.append((4, 0, -1))
-        self.coup_joues.append((4, BOARD_SIZE - 1, -1))
 
         self.all_walls_choices = np.transpose(
             np.nonzero(self.board_state.wall_possibilities > 0),
@@ -48,7 +44,6 @@ class Game:
         :param score_: bool
         :return:
         """
-        self.coup_joues.append(choice)
         if choice[2] == -1:
             self.board_state.update_player_positions(choice)
         else:
@@ -58,7 +53,7 @@ class Game:
         """Coup is played, scored and unplayed."""
         self.play(choice)
         score = self.score()
-        self.get_back()
+        self.board_state.get_back()
         return score
 
     def score(self):
@@ -66,25 +61,6 @@ class Game:
         return score_with_relative_path_length_dif(
             self.board_state
         )
-
-    def get_back(self, n: int = 1) -> None:
-        """Reset game to n coup before."""
-        for _ in range(n):
-            choice = self.coup_joues.pop()
-
-            if choice[2] == -1:
-                pos = self._last_pos
-                self.board_state.reset_player_position(pos)
-                self.board_state.winner = -1
-            else:
-                self.board_state.remove_wall(choice)
-
-    @property
-    def _last_pos(self):
-        for i_ in range(len(self.coup_joues) - 2, -1, -2):
-            if self.coup_joues[i_][2] == -1:
-                return self.coup_joues[i_]
-        return None
 
     def _all_moves(self):
         all_moves = []
@@ -126,8 +102,9 @@ class Game:
     def _all_possibilities(self):
         """Return current possibilities.
 
-        List of possible moves and possible wall placements. Does not
-        take into account the rule about not enclosing someone.
+        List of possible moves and possible wall placements.
+        Does not take into account the rule about not enclosing
+        someone.
         """
         all_moves = self._all_moves()
         if self.board_state.player.n_tuiles > 0:
@@ -153,13 +130,14 @@ class Game:
         return is_move_allowed
 
     def evaluate_all_choices(self):
-        """Score all choices, returns a vector with consistent order.
+        """Score all choices with consistent order.
 
         If the choice is not available, score is 0
         :return: score vector of length 8*8*2 + 4.
         """
         # d'abord pour les murs, je veux la liste des indices qui
-        # correspondent aux coups, et les coups associés comme ça je peux
+        # correspondent aux coups, et les coups associés comme
+        # ça je peux
         # remplir un tableau de zéros aux bons indices
         if self.board_state.player.n_tuiles > 0:
             all_walls_available = np.transpose(
@@ -185,7 +163,8 @@ class Game:
         else:
             scores = SCORE_MIN * np.ones(len(self.set))
 
-        # reste a faire les 4 mouvements possibles, +/-/gauche/droite
+        # reste a faire les 4 mouvements possibles,
+        # +/-/gauche/droite
         moves_scores = [SCORE_MIN] * 4
         all_moves = self._all_moves()
         pos = self.board_state.player.position
@@ -214,7 +193,8 @@ class Game:
         :return: best possibilities, cost (increasing).
         """
         all_coups = self._all_possibilities()
-        # attention de temps en temps all_coups est de dimension 1 et ça plante
+        # attention de temps en temps all_coups est de dimension
+        # 1 et ça plante
         all_scores = np.apply_along_axis(
             lambda x: self.evaluate(tuple(x)),
             1,

@@ -22,7 +22,7 @@ def play_random(game, rng=None):
 
 
 def play_with_proba(game, rng=None):
-    """Evaluate all possibilities and choose one of them based on a exp formula."""
+    """Choose one of them based on a exp formula."""
     res, cost = game.evaluate_all_possibilities()
     maxi = np.max(cost)
     cost = cost + 1 - maxi
@@ -54,7 +54,7 @@ def _best_move_seeing_future(game, n_future, n_sim, counter):
             game, n_future=n_future, n_sim=1, counter=counter
         )
         worse_case_scores.append(worse_case_score)
-        game.get_back()
+        game.board_state.get_back()
     return (
         tuple(choices[-n_sim:][np.argmax(worse_case_scores)]),
         np.max(worse_case_scores),
@@ -87,13 +87,13 @@ def _score_adversary_possibilities(
                 n_sim=n_sim,
                 counter=counter + 1,
             )
-        game.get_back()
+        game.board_state.get_back()
         scores.append(score)
     return min(scores)
 
 
 def play_seeing_future_rec(game, n_future=2, n_sim=4):
-    """Evaluate all possibilities and simulate the score after playing n coups."""
+    """Choose coup with best score after playing n coups."""
     coup, _ = _best_move_seeing_future(
         game, n_future=n_future, n_sim=n_sim, counter=0
     )

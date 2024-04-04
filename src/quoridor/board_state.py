@@ -18,7 +18,8 @@ class Player:
     def __init__(self, player_number: int) -> None:
         """Player class initialisation.
 
-        Each player gets a name, a number of wall, a position (i,j) and a position k.
+        Each player gets a name, a number of wall, a position
+        (i,j) and a position k.
 
         :param player_number:
         """
@@ -73,6 +74,9 @@ class BoardState:
         self.free_paths: sp.dok_matrix = _init_free_paths()
         self.winner: int = -1
         self.walls: set[tuple[int, int, int]] = set()
+        self.coup_joues = []
+        self.coup_joues.append((4, 0, -1))
+        self.coup_joues.append((4, BOARD_SIZE - 1, -1))
 
     @property
     def next_player_nb(self) -> int:
@@ -110,6 +114,7 @@ class BoardState:
             self.winner = self.next_player_nb
         self.player.position = (new_position[0], new_position[1])
         self.played_coup += 1
+        self.coup_joues.append(new_position)
 
     def reset_player_position(
         self, last_pos: tuple[int, int, int]
@@ -165,6 +170,26 @@ class BoardState:
             self.free_paths[k + 1, k + 11] = False
             self.free_paths[k + 11, k + 1] = False
         self.played_coup += 1
+        self.coup_joues.append(new_position)
+
+    def get_back(self, n: int = 1) -> None:
+        """Reset game to n coup before."""
+        for _ in range(n):
+            choice = self.coup_joues.pop()
+
+            if choice[2] == -1:
+                pos = self._last_pos
+                self.reset_player_position(pos)
+                self.winner = -1
+            else:
+                self.remove_wall(choice)
+
+    @property
+    def _last_pos(self):
+        for i_ in range(len(self.coup_joues) - 2, -1, -2):
+            if self.coup_joues[i_][2] == -1:
+                return self.coup_joues[i_]
+        return None
 
     def remove_wall(
         self, new_position: tuple[int, int, int]
@@ -182,7 +207,7 @@ class BoardState:
         :param player_number:
         :return:
         """
-        self.player.n_tuiles += 1
+        self.last_player.n_tuiles += 1
         self.walls.remove(new_position)
         x, y = new_position[0], new_position[1]
         k = 10 * x + y

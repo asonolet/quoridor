@@ -9,6 +9,7 @@ if __name__ == "__main__":
     # rng = np.random.default_rng(654654)
     pt = TermPlotter()
     game = Game("partie 1")
+    sleep_time = 0.15
     bs = game.board_state
     print("Player 0 pos, ", bs.player.position)
     print(
@@ -20,7 +21,7 @@ if __name__ == "__main__":
     # print(game.evaluate_all_possibilities(0))
     while bs.winner == -1:
         coup = (
-            po.play_seeing_future_rec(game)
+            po.play_with_proba(game)
             if i % 2 == 0
             else po.play_with_proba(game, rng=None)
         )
@@ -34,10 +35,10 @@ if __name__ == "__main__":
             bs.last_player.position,
         )
         pt.plot(bs)
-        # time.sleep(0.35)
+        time.sleep(sleep_time)
         i = i + 1
     print("And the winner is ... Player %.1d" % bs.winner)
     fin = time.time()
     temps = fin - debut
-    print("Temps moyen par coup : ", temps / i)
+    print("Temps moyen par coup : ", temps / i - sleep_time)
     print("Nombre de coup total :", i)
