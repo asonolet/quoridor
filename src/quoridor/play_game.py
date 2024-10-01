@@ -1,5 +1,6 @@
 """Define the command line quoridor application."""
 
+import multiprocessing as mp
 import time
 
 import click
@@ -10,7 +11,7 @@ from quoridor.game import Game
 from quoridor.terminal_plotter import TermPlotter
 
 
-def play_fn(*, pause=0.0, verbose=True):
+def play_fn(pause=0.0, *, verbose=False):
     """Simulate a game with two players."""
     # rng = np.random.default_rng(654654)
     game = Game("partie 1")
@@ -72,19 +73,20 @@ def play(pause):
 
 @click.command()
 @click.option("-n", default=5)
-def stat(n: int):
+@click.option("-p", default=3)
+def stat(n: int, p: int):
     """Play n games and print the statistics."""
     winner_count = [0, 0]
     player0_coups = []
     player1_coups = []
     debut = time.time()
-    for _ in range(n):
-        w, c = play_fn(pause=0.0, verbose=False)
-        winner_count[w] += 1
-        if w == 1:
-            player1_coups.append(c)
-        else:
-            player0_coups.append(c)
+    with mp.Pool(processes=p) as pool:
+        for w, c in pool.map(play_fn, [0.0] * n):
+            winner_count[w] += 1
+            if w == 1:
+                player1_coups.append(c)
+            else:
+                player0_coups.append(c)
     fin = time.time()
     print(f"Player0 won {winner_count[0]} / {n} times")
     print(f"    using {np.mean(player0_coups)} coup in mean")
