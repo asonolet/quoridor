@@ -6,9 +6,13 @@ build-backend = "setuptools.build_meta"
 name = "quoridor"
 version = "0.1.0"
 dependencies = [
+    "click",
     "numpy",
     "scipy"
 ]
+
+[project.scripts]
+quori = "quoridor.play_game:cli"
 
 [project.optional-dependencies]
 ml = ["tensorflow"]

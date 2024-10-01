@@ -77,16 +77,19 @@ class Game:
                 old_pos = np.array(
                     self.board_state.player.position
                 )
-                new_position = np.array(new_position)
+                other_player_position = np.array(new_position)
                 new_coup = tuple(
-                    np.r_[2 * new_position - old_pos, -1]
+                    np.r_[
+                        2 * other_player_position - old_pos, -1
+                    ]
                 )
                 if (
                     (0 < new_coup[0] < BOARD_SIZE)
-                    & (0 < new_coup[1] < BOARD_SIZE)
-                    & self.board_state.free_paths[
+                    and (0 < new_coup[1] < BOARD_SIZE)
+                    and self.board_state.free_paths[
                         10 * new_coup[0] + new_coup[1],
-                        10 * new_position[0] + new_position[1],
+                        10 * other_player_position[0]
+                        + other_player_position[1],
                     ]
                 ):
                     all_moves.append(new_coup)
