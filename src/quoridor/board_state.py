@@ -55,15 +55,17 @@ class BoardState:
     """BoardState object is used to play at one instant.
 
     A game is a succession of BoardState.
-    Methods to pass from one BoardState to an other are declared
-    here.
+    Methods to pass from one BoardState to an other are
+    declared here.
     """
 
     def __init__(self, first_player: int = 0) -> None:
         """Initialize the board state as the begining of a game.
 
-        :param first_player: the first player to play. Player 0
-        start from bottom and player 1 at top (j=BOARD_SIZE - 1).
+        :param first_player: the first player to play.
+           Player 0 start from bottom and player 1 at top
+           (j=BOARD_SIZE - 1).
+
         """
         self.wall_possibilities = np.ones(
             (BOARD_SIZE - 1, BOARD_SIZE - 1, 2)

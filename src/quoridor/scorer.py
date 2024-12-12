@@ -12,11 +12,12 @@ SCORE_MAX = 1000
 def score_with_relative_path_length_dif(bs: BoardState) -> float:
     """Calculate a score.
 
-    The score is the actual relative path length difference between
-    players.
+    The score is the actual relative path length difference
+    between players.
 
-    :return: if one way is blocked -1000, if player won inf, otherwise (
-       l2-l1)/l1.
+    :return: if one way is blocked -1000, if player won inf,
+       otherwise (l2-l1)/l1.
+
     """
     if bs.winner == bs.last_player_nb:
         return SCORE_MAX

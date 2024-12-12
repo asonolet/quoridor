@@ -1189,11 +1189,6 @@ all = [
     { name = "matplotlib" },
     { name = "tensorflow" },
 ]
-dev = [
-    { name = "pydata-sphinx-theme" },
-    { name = "pytest" },
-    { name = "sphinx" },
-]
 ml = [
     { name = "tensorflow" },
 ]
@@ -1203,7 +1198,9 @@ x = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "pydata-sphinx-theme" },
     { name = "pytest" },
+    { name = "sphinx" },
 ]
 
 [package.metadata]
@@ -1212,16 +1209,17 @@ requires-dist = [
     { name = "matplotlib", marker = "extra == 'all'" },
     { name = "matplotlib", marker = "extra == 'x'" },
     { name = "numpy" },
-    { name = "pydata-sphinx-theme", marker = "extra == 'dev'" },
-    { name = "pytest", marker = "extra == 'dev'" },
     { name = "scipy" },
-    { name = "sphinx", marker = "extra == 'dev'" },
     { name = "tensorflow", marker = "extra == 'all'" },
     { name = "tensorflow", marker = "extra == 'ml'" },
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8.3.4" }]
+dev = [
+    { name = "pydata-sphinx-theme", specifier = ">=0.16.0" },
+    { name = "pytest", specifier = ">=8.3.4" },
+    { name = "sphinx", specifier = ">=7.4.7" },
+]
 
 [[package]]
 name = "requests"

@@ -82,12 +82,12 @@ class TreeOperations:
         while state.parent is not None:
             state1_path.append(state)
             state = state.parent
-        state1_path = state1_path[::-1]
+        state1_path.reverse()
         state = state2
         while state.parent is not None:
             state2_path.append(state)
             state = state.parent
-        state2_path = state2_path[::-1]
+        state2_path.reverse()
         i = 0
         while state1_path[i] == state2_path[i]:
             i += 1

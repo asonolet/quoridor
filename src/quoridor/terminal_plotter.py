@@ -12,9 +12,9 @@ class TermPlotter:
     """Terminal plotter.
 
     The ``TermPlotter`` object is used to plot a game on the
-    terminal. It can only work if it plots the game from the begining,
-    it doesn't have yet any feature to plot a game from any state it
-    is in.
+    terminal. It can only work if it plots the game from the
+    begining, it doesn't have yet any feature to plot a game
+    from any state it is in.
     """
 
     wall_line = "+   " * 9 + "+"
