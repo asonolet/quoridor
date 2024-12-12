@@ -5,6 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quoridor"
 version = "0.1.0"
+requires-python = ">=3.9"
 dependencies = [
     "click",
     "numpy",
@@ -30,3 +31,8 @@ docstring-code-format = true
 select = ["ALL"]
 ignore = ["ANN", "ANN101", "ANN102", "ERA001", "T201", "COM812", "ISC001", "D202", "D203", "D213", "S101"]
 exclude = ["doc/conf.py", "tests/*", "src/reinforcement/*", "src/graphical/*", "app/*"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.4",
+]
