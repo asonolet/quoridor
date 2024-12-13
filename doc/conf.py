@@ -1,5 +1,5 @@
-# Configuration file for the Sphinx documentation builder.
-#
+"_static"  # Configuration file for the Sphinx documentation builder.
+4
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 # import os
@@ -39,7 +39,7 @@ autosummary_generate = True
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "pydata_sphinx_theme"
-html_static_path = ["_static"]
+# html_static_path = []
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
