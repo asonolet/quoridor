@@ -34,6 +34,7 @@ exclude = ["doc/conf.py", "tests/*", "src/reinforcement/*", "src/graphical/*", "
 [dependency-groups]
 dev = [
     "pydata-sphinx-theme>=0.16.0",
+    "pytest-cov>=6.0.0",
     "pytest>=8.3.4",
     "sphinx>=7.4.7",
 ]
