@@ -1,0 +1,19 @@
+﻿quoridor
+========
+
+.. automodule:: quoridor
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   board_state
+   explore
+   game
+   play_game
+   policy
+   scorer
+   terminal_plotter

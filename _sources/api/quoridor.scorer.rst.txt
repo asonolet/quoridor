@@ -1,0 +1,12 @@
+quoridor.scorer
+===============
+
+.. automodule:: quoridor.scorer
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      score_with_relative_path_length_dif
+   

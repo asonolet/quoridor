@@ -1,0 +1,15 @@
+quoridor.policy
+===============
+
+.. automodule:: quoridor.policy
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      play_greedy
+      play_random
+      play_seeing_future_rec
+      play_with_proba
+   

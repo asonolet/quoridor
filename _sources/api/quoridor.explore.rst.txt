@@ -1,0 +1,16 @@
+quoridor.explore
+================
+
+.. automodule:: quoridor.explore
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      BestMoves
+      Exploration
+      Path
+      PossibleMove
+      TreeOperations
+   

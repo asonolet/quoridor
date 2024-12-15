@@ -1,0 +1,12 @@
+quoridor.play\_game
+===================
+
+.. automodule:: quoridor.play_game
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      play_fn
+   

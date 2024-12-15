@@ -1,0 +1,13 @@
+quoridor.board\_state
+=====================
+
+.. automodule:: quoridor.board_state
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      BoardState
+      Player
+   

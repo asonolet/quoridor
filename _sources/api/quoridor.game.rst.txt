@@ -1,0 +1,12 @@
+quoridor.game
+=============
+
+.. automodule:: quoridor.game
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Game
+   

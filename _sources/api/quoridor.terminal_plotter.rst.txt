@@ -1,0 +1,12 @@
+quoridor.terminal\_plotter
+==========================
+
+.. automodule:: quoridor.terminal_plotter
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      TermPlotter
+   
