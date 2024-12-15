@@ -349,6 +349,9 @@
 <dt class="sig sig-object py" id="quoridor.policy.play_with_proba">
 <span class="sig-prename descclassname"><span class="pre">quoridor.policy.</span></span><span class="sig-name descname"><span class="pre">play_with_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#quoridor.policy.play_with_proba" title="Lien vers cette définition">#</a></dt>
 <dd><p>Choose one of them based on a exp formula.</p>
+<p>This formula affect a 0 proba to all play
+leading to an incorrect situation and
+e^100 to the best move.</p>
 </dd></dl>
 
 </section>
