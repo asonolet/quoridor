@@ -22,7 +22,12 @@ def play_random(game, rng=None):
 
 
 def play_with_proba(game, rng=None):
-    """Choose one of them based on a exp formula."""
+    """Choose one of them based on a exp formula.
+
+    This formula affect a 0 proba to all play
+    leading to an incorrect situation and
+    e^100 to the best move.
+    """
     res, cost = game.evaluate_all_possibilities()
     maxi = np.max(cost)
     cost = cost + 1 - maxi
